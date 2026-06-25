@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/External/.claude/**)",
+      "Read(//c/Users/External/.claude/skills/**)",
+      "Bash(sort -k2)",
+      "WebSearch"
+    ]
+  }
+}

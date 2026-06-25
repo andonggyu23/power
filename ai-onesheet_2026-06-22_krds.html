@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>인공지능 산업별 지형도 — 2026-06-22 (KRDS)</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   KRDS(범정부 디자인시스템) 변형 — 별도 트랙. 외부 이미지·CDN·웹폰트 0(자기완결).
+   기존 포털 톤(template.html·design-system.md)에 반영하지 말 것. 원복은 이 파일 삭제로 끝.
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  /* ── KRDS 색 토큰 ── */
+  --krds-primary:#256EF4; --krds-primary-deep:#0B50D0; --krds-primary-active:#083891; --krds-primary-bg:#ECF2FE;
+  --krds-secondary:#346FB2;
+  --krds-danger:#DE3412; --krds-warning:#FFB114; --krds-warning-text:#9E6A00;
+  --krds-success:#228738; --krds-info:#0B78CB; --krds-point:#D63D4A;
+  --krds-text:#1E2124; --krds-text-sub:#464C53; --krds-caption:#6D7882;
+  --krds-border:#E6E8EA; --krds-surface:#F4F5F6; --krds-bg:#FFFFFF; --krds-line-strong:#58616A;
+
+  /* ── 기존 클래스가 참조하는 변수명을 KRDS 값으로 재매핑(콘텐츠 마크업 보존용) ── */
+  --navy:var(--krds-text); --navy-dark:var(--krds-text);
+  --teal:var(--krds-primary); --teal-dark:var(--krds-primary-deep);
+  --bg:var(--krds-bg); --card:var(--krds-bg); --border:var(--krds-border);
+  --text:var(--krds-text); --muted:var(--krds-caption);
+  --up:var(--krds-danger); --down:var(--krds-info);   /* 상승/위험=danger · 하락/정보=info */
+  --warn-bg:#FFF6E0; --warn-border:#FFE2A8; --warn-text:var(--krds-warning-text);
+  --ok:var(--krds-success); --ok-bg:#E6F4E9; --fail:var(--krds-danger); --fail-bg:#FCE9E5;
+  --gray:var(--krds-caption); --gray-bg:var(--krds-surface);
+  /* 차트 팔레트 — KRDS 톤 */
+  --c1:#256EF4; --c2:#083891; --c3:#FFB114; --c4:#DE3412; --c5:#346FB2; --c6:#C5CAD0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:"Pretendard GOV","Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  background:var(--krds-bg); color:var(--krds-text); font-size:16px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:1200px; margin:0 auto; padding:0 24px 40px; }
+
+/* ── Masthead(공식 배너 띠) ── */
+.masthead { background:var(--krds-surface); border-bottom:1px solid var(--krds-border); }
+.masthead-inner { max-width:1200px; margin:0 auto; padding:8px 24px; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--krds-caption); }
+.masthead-inner .gov-emblem { font-size:14px; line-height:1; }
+
+/* ── Identifier + Header ── */
+.gov-header { background:var(--krds-bg); border-bottom:1px solid var(--krds-border); }
+.gov-header-inner { max-width:1200px; margin:0 auto; padding:24px; }
+.hdr-brand { display:flex; align-items:center; gap:16px; }
+.brandmark { height:64px; width:64px; flex-shrink:0; vertical-align:middle; }
+.gov-header .org { font-size:14px; color:var(--krds-text-sub); font-weight:700; letter-spacing:-.2px; }
+.gov-header h1 { font-size:30px; font-weight:700; color:var(--krds-text); letter-spacing:-.5px; margin:4px 0 0; line-height:1.25; }
+.gov-header .breadcrumb { margin-top:16px; font-size:13px; color:var(--krds-caption); }
+.gov-header .breadcrumb b { color:var(--krds-text-sub); font-weight:700; }
+.gov-header .sub { margin-top:8px; font-size:14px; color:var(--krds-text-sub); }
+.gov-header .sub b { color:var(--krds-text); font-weight:700; }
+
+/* ── KPI 스트립 ── */
+.kpi-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:24px 0; }
+.kpi-tile { background:var(--krds-bg); border:1px solid var(--krds-border); border-radius:8px; padding:16px 20px; }
+.kpi-tile .knum { font-size:34px; font-weight:700; color:var(--krds-text); line-height:1; letter-spacing:-1px; }
+.kpi-tile .knum .ku { font-size:15px; font-weight:700; color:var(--krds-primary); margin-left:3px; }
+.kpi-tile .klbl { font-size:14px; color:var(--krds-caption); margin-top:8px; }
+
+/* ── KRDS 탭(갱신/참고 그룹) — 텍스트 + 하단 3px primary 인디케이터, 채움 금지 ── */
+.krds-tabs { display:flex; gap:0; border-bottom:1px solid var(--krds-border); margin:32px 0 20px; }
+.krds-tab { font-size:17px; font-weight:700; color:var(--krds-caption); padding:12px 20px; border-bottom:3px solid transparent; margin-bottom:-1px; }
+.krds-tab.active { color:var(--krds-primary); border-bottom-color:var(--krds-primary); }
+.krds-tab .tsub { display:block; font-size:12px; font-weight:400; color:var(--krds-caption); margin-top:3px; letter-spacing:-.2px; }
+
+/* 참고 지표 갱신 주기 칩 */
+.cadence-chip { font-size:12px; font-weight:700; background:var(--krds-surface); color:var(--krds-text-sub); border-radius:4px; padding:3px 8px; margin-left:auto; }
+
+/* 테마 클러스터 — 유사 섹션 묶음 (v11, KRDS 톤) */
+.cluster { border:1px solid var(--krds-border); border-radius:8px; background:var(--krds-surface); padding:8px 16px 18px; margin:18px 0 6px; }
+.cluster-head { display:flex; align-items:baseline; gap:10px; font-size:17px; font-weight:700; color:var(--krds-text); padding:12px 2px 14px; flex-wrap:wrap; }
+.cluster-head .ch-ico { font-size:18px; }
+.cluster-head .ch-sub { font-size:13px; font-weight:400; color:var(--krds-caption); }
+.cluster .row, .cluster .cols2, .cluster .cols3, .cluster .cols4 { margin-top:0; }
+.cluster .card { background:var(--krds-bg); }   /* 클러스터 surface 위에서 카드는 흰색으로 분리 */
+.cluster > .card:last-child, .cluster > .row:last-child { margin-bottom:0; }
+
+/* ── 그리드 & 카드 ── */
+.row { display:grid; gap:16px; margin-bottom:16px; }
+.cols3 { grid-template-columns:1fr 1.15fr 1fr; }
+.cols2 { grid-template-columns:1.2fr 1fr; }
+.cols2.even { grid-template-columns:1fr 1fr; }
+.cols4 { grid-template-columns:repeat(4,1fr); }
+.card { background:var(--krds-bg); border:1px solid var(--krds-border); border-radius:8px; box-shadow:none; padding:20px 24px; }
+.card h2 { position:relative; font-size:18px; font-weight:700; color:var(--krds-text); margin:0 0 16px; padding-bottom:12px; border-bottom:1px solid var(--krds-border); display:flex; align-items:center; gap:8px; letter-spacing:-.3px; flex-wrap:wrap; }
+.card h2 .subt { font-weight:400; font-size:13px; color:var(--krds-caption); }
+.headline { font-size:16px; font-weight:700; color:var(--krds-text); line-height:1.45; margin:10px 0 16px; padding-left:12px; border-left:3px solid var(--krds-primary); overflow-wrap:anywhere; word-break:keep-all; }
+.headline .hl-key { color:var(--krds-primary-deep); white-space:normal; }
+.empty-card { border:1px dashed var(--krds-border); border-radius:8px; background:var(--krds-surface); display:flex; align-items:center; justify-content:center; color:var(--krds-caption); min-height:120px; text-align:center; }
+
+/* ── 배지·칩·링크(KRDS 규격) ── */
+.badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 4px; border-radius:4px; font-size:11px; font-weight:700; vertical-align:middle; }
+.badge.a { background:var(--ok-bg); color:var(--krds-success); }
+.badge.b { background:#FFF6E0; color:var(--krds-warning-text); }
+.badge.c { background:var(--krds-surface); color:var(--krds-caption); }
+.chip { display:inline-block; padding:2px 8px; border-radius:4px; font-size:12px; background:var(--krds-surface); color:var(--krds-text-sub); vertical-align:middle; font-weight:700; }
+.chip.kr { background:var(--krds-primary-bg); color:var(--krds-primary-deep); }
+.chip.gl { background:var(--krds-surface); color:var(--krds-text-sub); }
+.chip.dev { background:var(--krds-primary-bg); color:var(--krds-primary-deep); }
+.src { font-size:13px; color:var(--krds-primary); text-decoration:underline; text-underline-offset:2px; white-space:nowrap; font-weight:700; }
+.src:hover { color:var(--krds-primary-deep); }
+.up { color:var(--krds-danger); font-weight:700; }
+.down { color:var(--krds-info); font-weight:700; }
+.muted { color:var(--krds-caption); font-size:13px; }
+.foot-src { font-size:13px; color:var(--krds-caption); margin-top:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; line-height:1.5; }
+.cnt { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; border-radius:4px; background:var(--krds-primary); color:#fff; font-size:12px; font-weight:700; padding:0 6px; }
+.cnt.zero { background:var(--krds-caption); }
+
+/* ── 보조지표 배너 ── */
+.aux { background:#FFF6E0; border:1px solid #FFE2A8; color:var(--krds-warning-text); border-radius:4px; padding:8px 12px; font-size:13px; margin-bottom:14px; font-weight:700; }
+
+/* ── 최신 모델 ── */
+.modelgrid { display:flex; flex-direction:column; gap:10px; }
+.model-t { border:1px solid var(--krds-border); border-radius:8px; padding:12px 14px; }
+.model-t .row1 { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.model-t .mname { font-weight:700; font-size:16px; color:var(--krds-text); }
+.model-t .mcap { font-size:13px; color:var(--krds-text-sub); margin-top:5px; line-height:1.5; }
+.model-t .mfoot { display:flex; align-items:center; gap:7px; margin-top:8px; flex-wrap:wrap; }
+
+/* ── SOTA ── */
+.sotagrid { display:flex; flex-direction:column; gap:8px; }
+.sota-t { display:flex; align-items:center; gap:12px; border:1px solid var(--krds-border); border-radius:8px; padding:10px 12px; }
+.sota-t .scap { flex:0 0 70px; font-size:13px; color:var(--krds-caption); font-weight:700; }
+.sota-t .smid { flex:1 1 auto; min-width:0; }
+.sota-t .smid .smname { font-weight:700; font-size:14px; color:var(--krds-text); }
+.sota-t .smid .smbench { font-size:12px; color:var(--krds-caption); }
+.sota-t .sscore { flex:0 0 auto; font-size:24px; font-weight:700; color:var(--krds-text); line-height:1; }
+.sota-t .ssrc { flex:0 0 auto; }
+
+/* ── 한국 AI 모델 글로벌 순위 (korea_model_ranking) — 2블록 좌우 ── */
+.kmr-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.kmr-block { border:1px solid var(--krds-border); border-radius:8px; padding:16px 16px; display:flex; flex-direction:column; }
+.kmr-block .kmr-bh { font-size:15px; font-weight:700; color:var(--krds-text); display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
+.kmr-block .kmr-bsub { font-size:12px; color:var(--krds-caption); margin-bottom:12px; line-height:1.45; }
+.kmr-ctx { background:var(--krds-surface); border-radius:8px; padding:9px 12px; margin-bottom:12px; }
+.kmr-ctx .kmr-ctx-t { font-size:12px; font-weight:700; color:var(--krds-text-sub); margin-bottom:6px; }
+.kmr-ctx .kmr-ctx-i { display:flex; align-items:baseline; gap:7px; font-size:13px; padding:2px 0; line-height:1.4; }
+.kmr-ctx .kmr-ctx-i .kr-rk { font-weight:700; color:var(--krds-text); flex:0 0 26px; }
+.kmr-ctx .kmr-ctx-i .kr-nm { font-weight:700; color:var(--krds-text); overflow-wrap:anywhere; word-break:keep-all; }
+.kmr-ctx .kmr-ctx-i .kr-dv { color:var(--krds-caption); font-size:12px; }
+.kmr-ctx .kmr-ctx-i .kr-sc { margin-left:auto; font-weight:700; color:var(--krds-primary-deep); white-space:nowrap; }
+.kmr-kcard { border:1px solid var(--krds-border); border-left:3px solid var(--krds-primary); border-radius:8px; padding:11px 13px; margin-bottom:10px; display:flex; align-items:flex-start; gap:13px; }
+.kmr-kcard:last-of-type { margin-bottom:0; }
+.kmr-kcard .kmr-kmid { flex:1 1 auto; min-width:0; }
+.kmr-kcard .kmr-knm { font-size:15px; font-weight:700; color:var(--krds-text); line-height:1.3; overflow-wrap:anywhere; word-break:keep-all; }
+.kmr-kcard .kmr-kchips { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; align-items:center; }
+.kmr-kcard .kmr-logo { flex:0 0 auto; margin-top:1px; }
+.kmr-kcard .kmr-logo .lchip { height:30px; min-width:42px; }
+.kmr-kcard .kmr-logo .wm { font-size:14px; }
+.kmr-kcard .kmr-logo .wm.sm { font-size:11px; }
+.kmr-rank { flex:0 0 auto; text-align:right; min-width:60px; }
+.kmr-rank .kmr-hash { font-size:25px; font-weight:700; color:var(--krds-text); line-height:1; letter-spacing:-1px; }
+.kmr-rank .kmr-den { font-size:12px; color:var(--krds-caption); display:block; margin-top:3px; }
+.kmr-rank .kmr-nor { font-size:13px; font-weight:700; color:var(--krds-caption); line-height:1.35; }
+.kmr-sc { font-size:12px; font-weight:700; background:var(--krds-surface); color:var(--krds-text-sub); border-radius:4px; padding:2px 8px; }
+.kmr-sc.score { background:var(--krds-primary-bg); color:var(--krds-primary-deep); }
+.kmr-tag { font-size:11px; font-weight:700; border-radius:4px; padding:2px 7px; }
+.kmr-tag.rsn { background:var(--krds-primary-bg); color:var(--krds-primary-deep); }
+.kmr-tag.nrsn { background:var(--krds-surface); color:var(--krds-text-sub); }
+.kmr-tag.ow { background:#E6F4E9; color:var(--krds-success); }
+.kmr-tag.prop { background:#FFF6E0; color:var(--krds-warning-text); }
+.kmr-na { font-size:12px; color:var(--krds-caption); margin-top:11px; padding-top:10px; border-top:1px dashed var(--krds-border); line-height:1.45; }
+.kmr-hist { font-size:12px; color:var(--krds-caption); background:var(--krds-surface); border-radius:8px; padding:9px 12px; margin-top:12px; line-height:1.5; }
+.kmr-hist b { color:var(--krds-text-sub); font-weight:700; }
+@media (max-width:900px){ .kmr-grid { grid-template-columns:1fr; } }
+
+/* ── 도넛 ── */
+.donut-wrap { display:flex; align-items:center; gap:20px; justify-content:center; flex-wrap:wrap; }
+.donut { width:158px; height:158px; border-radius:50%; position:relative; flex-shrink:0; }
+.donut-hole { position:absolute; inset:34px; background:var(--krds-bg); border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.donut-hole .dh-top { font-size:12px; color:var(--krds-caption); }
+.donut-hole .dh-big { font-size:24px; font-weight:700; color:var(--krds-primary); line-height:1; }
+.legend { list-style:none; font-size:13px; }
+.legend li { display:flex; align-items:center; gap:8px; margin:4px 0; }
+.legend .sw { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+.legend .lv { margin-left:auto; font-weight:700; color:var(--krds-text); }
+
+/* ── 스탯 카드 ── */
+.statgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.statgrid.two { grid-template-columns:repeat(2,1fr); }
+.statgrid.three { grid-template-columns:repeat(3,1fr); }
+.stat { border:1px solid var(--krds-border); border-radius:8px; padding:14px 16px; }
+.stat .label { font-size:13px; color:var(--krds-caption); font-weight:700; }
+.stat .big { font-size:28px; font-weight:700; color:var(--krds-text); margin-top:4px; line-height:1; letter-spacing:-1px; }
+.stat .big .u { font-size:13px; font-weight:400; color:var(--krds-caption); letter-spacing:0; }
+.stat .delta { margin-top:6px; font-size:13px; }
+.stat .seg { font-size:12px; color:var(--krds-caption); margin-top:5px; }
+
+/* ── 특허 3단 ── */
+.pat-tier { margin-bottom:14px; }
+.pat-tier .tier-label { font-size:13px; font-weight:700; color:var(--krds-text); margin-bottom:8px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.pat-pair { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.pat-box { border:1px solid var(--krds-border); border-radius:8px; padding:14px 16px; position:relative; }
+.pat-box.kr { border-color:var(--krds-primary); background:var(--krds-primary-bg); }
+.pat-box .plabel { font-size:13px; color:var(--krds-caption); font-weight:700; }
+.pat-box .pbig { font-size:28px; font-weight:700; color:var(--krds-text); line-height:1; margin-top:4px; letter-spacing:-1px; }
+.pat-box .pbig .u { font-size:13px; font-weight:400; color:var(--krds-caption); letter-spacing:0; }
+.pat-box .rankbadge { display:inline-block; font-size:12px; font-weight:700; color:#fff; background:var(--krds-primary); border-radius:4px; padding:2px 9px; margin-top:8px; }
+.pat-box .ptag { display:inline-block; font-size:12px; background:var(--krds-surface); color:var(--krds-text-sub); border-radius:4px; padding:2px 8px; margin-top:8px; }
+.pat-trend { display:flex; align-items:center; gap:16px; border:1px solid var(--krds-border); border-radius:8px; padding:14px 16px; flex-wrap:wrap; }
+.pat-trend .endpoint { text-align:center; }
+.pat-trend .endpoint .yr { font-size:13px; color:var(--krds-caption); }
+.pat-trend .endpoint .v { font-size:26px; font-weight:700; color:var(--krds-text); line-height:1; }
+.pat-trend .endpoint .v .u { font-size:12px; font-weight:400; color:var(--krds-caption); }
+.pat-trend .arrowcol { display:flex; flex-direction:column; align-items:center; color:var(--krds-danger); font-weight:700; }
+.pat-trend .arrowcol .glyph { font-size:18px; line-height:1; }
+.pat-trend .arrowcol .cagr { font-size:13px; }
+.pat-trend .span-note { display:inline-block; font-size:12px; background:var(--krds-surface); color:var(--krds-text-sub); border-radius:4px; padding:2px 8px; }
+.pat-ref { border:1px dashed var(--krds-border); border-radius:8px; padding:12px 14px; }
+.pat-ref .refbig { font-size:20px; font-weight:700; color:var(--krds-text); }
+.pat-ref .refbig .u { font-size:12px; font-weight:400; color:var(--krds-caption); }
+.pat-ref .refsep { font-size:12px; color:var(--krds-warning-text); background:#FFF6E0; border:1px solid #FFE2A8; border-radius:4px; padding:1px 6px; margin-left:6px; }
+
+/* ── 바 차트 ── */
+.bars { display:flex; align-items:flex-end; gap:32px; min-height:165px; justify-content:center; padding-top:8px; }
+.bar-col { display:flex; flex-direction:column; align-items:center; gap:6px; font-size:13px; }
+.bar-col .val { font-size:14px; color:var(--krds-text); font-weight:700; }
+.bar { width:48px; border-radius:4px 4px 0 0; flex-shrink:0; }
+
+/* ── 데이터센터 신규발표 ── */
+.dc-none { font-size:13px; color:var(--krds-caption); font-style:italic; padding:10px 2px; }
+.dc-oop { display:flex; align-items:flex-start; gap:8px; font-size:13px; font-weight:700; color:var(--krds-text-sub); background:var(--krds-surface); border:1px dashed var(--krds-border); border-radius:8px; padding:9px 12px; margin-top:10px; line-height:1.5; overflow-wrap:anywhere; word-break:keep-all; }
+.dc-oop .oop-tag { flex:0 0 auto; font-size:11px; font-weight:700; color:var(--krds-caption); background:#fff; border:1px solid var(--krds-border); border-radius:4px; padding:2px 6px; white-space:nowrap; }
+
+/* ── 한국 지도 버블맵(콘텐츠 보존) ── */
+.proto-badge { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; background:#FFF6E0; color:var(--krds-warning-text); border:1px dashed var(--krds-warning); border-radius:4px; padding:2px 8px; margin-left:8px; vertical-align:middle; }
+.kmap-wrap { display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start; margin-top:14px; }
+.kmap { flex:0 0 auto; }
+.kmap svg { width:340px; height:auto; display:block; }
+.kmap .sido { fill:var(--krds-surface); stroke:#C5CAD0; stroke-width:.6; stroke-linejoin:round; }
+.kmap .sido.has-aidc { fill:var(--krds-primary-bg); }
+/* 전력 여유수준 choropleth — KRDS 의미색(여유=success/보통=warning/부족=danger) 저채도 면 */
+.kmap .sido.pw-high { fill:rgba(34,135,56,.14); }
+.kmap .sido.pw-mid  { fill:rgba(255,177,20,.18); }
+.kmap .sido.pw-low  { fill:rgba(222,52,18,.12); }
+.pw-legend { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:2px 0 10px; font-size:13px; }
+.pw-legend .sw { width:14px; height:10px; border-radius:2px; display:inline-block; margin-right:5px; vertical-align:middle; border:1px solid rgba(0,0,0,.08); }
+.legend-group-lbl { font-size:12px; font-weight:700; color:var(--krds-text-sub); margin-right:2px; }
+.pw-chip { display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:700; border-radius:4px; padding:1px 6px; }
+.pw-chip.high { background:rgba(34,135,56,.16); color:var(--krds-success); }
+.pw-chip.mid  { background:rgba(255,177,20,.22); color:var(--krds-warning-text); }
+.pw-chip.low  { background:rgba(222,52,18,.14); color:var(--krds-danger); }
+.kmap .sido-lbl { font-size:8.5px; fill:#9AA4B2; font-weight:700; pointer-events:none; }
+.kmap .region-bubble { stroke:#fff; stroke-width:1.5; opacity:.92; }
+.kmap .region-bubble.nullcap { fill-opacity:.42; stroke-dasharray:3 2; stroke:var(--krds-caption); stroke-width:1.5; }
+.kmap .mlbl { font-size:9px; fill:var(--krds-text); font-weight:700; paint-order:stroke; stroke:#fff; stroke-width:2.4px; stroke-linejoin:round; }
+.kmap .mlbl .mw { fill:var(--krds-caption); font-weight:400; }
+.map-side { flex:1 1 360px; min-width:300px; }
+.map-legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:12px; }
+.map-legend .li { display:flex; align-items:center; gap:6px; font-size:13px; }
+.map-legend .dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+.map-legend .dot.cand { background:#fff; border:1.5px dashed var(--krds-caption); }
+.rgrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.rg-item { border:1px solid var(--krds-border); border-radius:8px; padding:10px 12px; border-left:3px solid var(--krds-caption); }
+.rg-item.op { border-left-color:var(--krds-success); }
+.rg-item.const { border-left-color:var(--krds-warning); }
+.rg-item.plan { border-left-color:var(--krds-primary); }
+.rg-item.cand { border-left-color:var(--krds-caption); }
+.rg-item .rg-top { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.rg-item .rg-name { font-size:14px; font-weight:700; color:var(--krds-text); }
+.rg-stat { display:inline-flex; gap:4px; font-size:11px; font-weight:700; border-radius:4px; padding:2px 7px; }
+.rg-stat.op { background:var(--ok-bg); color:var(--krds-success); }
+.rg-stat.const { background:#FFF6E0; color:var(--krds-warning-text); }
+.rg-stat.plan { background:var(--krds-primary-bg); color:var(--krds-primary-deep); }
+.rg-stat.cand { background:var(--krds-surface); color:var(--krds-caption); }
+.rg-item .rg-cap { font-size:14px; font-weight:700; color:var(--krds-primary-deep); margin-top:5px; overflow-wrap:anywhere; }
+.rg-item .rg-cap.aux2 { font-size:13px; color:var(--krds-caption); }
+.rg-item .rg-fac { font-size:12px; color:var(--krds-text-sub); margin-top:3px; line-height:1.5; overflow-wrap:anywhere; word-break:keep-all; }
+
+/* ── 정책·거버넌스 ── */
+.pol-new { border-left:3px solid var(--krds-primary); background:var(--krds-primary-bg); border-radius:0 8px 8px 0; padding:10px 14px; font-weight:700; color:var(--krds-primary-deep); margin-bottom:14px; }
+.pol-new.none { border-left-style:dashed; border-left-color:var(--krds-caption); background:var(--krds-surface); color:var(--krds-caption); }
+.pol-hist { background:var(--krds-surface); border:1px solid var(--krds-border); border-radius:8px; padding:14px 16px; }
+.pol-hist h3 { font-size:14px; font-weight:700; color:var(--krds-text-sub); margin-bottom:10px; display:flex; align-items:center; gap:7px; }
+.pol-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.pol-item { border-left:3px solid var(--krds-border); padding:6px 0 8px 12px; margin-bottom:8px; }
+.pol-item .pi-head { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.pol-item .pi-date { font-size:12px; font-weight:700; color:var(--krds-caption); }
+.pol-item .pi-title { font-size:14px; font-weight:700; color:var(--krds-text); margin-top:4px; line-height:1.4; overflow-wrap:anywhere; word-break:keep-all; }
+.pol-item .pi-foot { display:flex; align-items:center; gap:6px; margin-top:5px; flex-wrap:wrap; }
+.schip { display:inline-block; font-size:11px; font-weight:700; border-radius:4px; padding:2px 7px; background:var(--krds-surface); color:var(--krds-text-sub); }
+.schip.live { background:var(--ok-bg); color:var(--krds-success); }
+.schip.plan { background:#FFF6E0; color:var(--krds-warning-text); }
+
+/* ── 투자·인재 ── */
+.it-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.it-c { border:1px solid var(--krds-border); border-radius:8px; padding:12px 14px; }
+.it-c.kr { border-color:var(--krds-primary); background:var(--krds-primary-bg); }
+.it-c .il { font-size:13px; color:var(--krds-caption); font-weight:700; line-height:1.4; min-height:36px; }
+.it-c .iv { font-size:24px; font-weight:700; color:var(--krds-text); line-height:1; margin-top:6px; letter-spacing:-1px; }
+.it-c .iv .u { font-size:13px; font-weight:400; color:var(--krds-caption); letter-spacing:0; }
+.it-c .inote { font-size:12px; color:var(--krds-caption); margin-top:6px; line-height:1.5; }
+.it-c .iscope { display:inline-block; font-size:11px; font-weight:700; border-radius:4px; padding:2px 7px; margin-top:6px; }
+.iscope.gl { background:var(--krds-surface); color:var(--krds-text-sub); }
+.iscope.kr { background:var(--krds-primary-bg); color:var(--krds-primary-deep); }
+.iscope.cmp { background:var(--krds-surface); color:var(--krds-text-sub); }
+
+/* ── 타임라인 ── */
+.timeline { display:flex; align-items:stretch; gap:0; margin:6px 0 18px; flex-wrap:wrap; }
+.tl-step { flex:1 1 0; min-width:120px; position:relative; padding:10px 14px; border-left:3px solid var(--krds-border); }
+.tl-step:first-child { border-left:3px solid var(--krds-primary); }
+.tl-step.cur { border-left-color:var(--krds-primary); background:var(--krds-primary-bg); border-radius:0 8px 8px 0; }
+.tl-step .tl-date { font-size:12px; font-weight:700; color:var(--krds-primary-deep); }
+.tl-step .tl-txt { font-size:13px; color:var(--krds-text-sub); margin-top:4px; line-height:1.45; }
+.tl-step .tl-txt b { color:var(--krds-text); }
+
+/* ── 로스터 ── */
+.roster-legend { display:flex; gap:16px; flex-wrap:wrap; font-size:13px; margin-bottom:12px; }
+.roster-legend .rl { display:flex; align-items:center; gap:6px; }
+.dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.dot.pass { background:var(--krds-success); } .dot.fail { background:var(--krds-danger); } .dot.add { background:var(--krds-warning); } .dot.out { background:var(--krds-caption); }
+.roster { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+.rcard { border:1px solid var(--krds-border); border-radius:8px; padding:14px 14px 12px; position:relative; display:flex; flex-direction:column; }
+.rcard.pass { border-top:3px solid var(--krds-success); }
+.rcard.fail { border-top:3px solid var(--krds-danger); }
+.rcard.add { border-top:3px solid var(--krds-warning); }
+.rcard.out { border-top:3px solid var(--krds-caption); }
+.rlogo { height:38px; margin-bottom:8px; display:flex; align-items:center; }
+.rlogo .lchip { height:32px; min-width:46px; max-width:100%; padding:0 10px; border:1px solid var(--krds-border); border-radius:4px; background:#fff; display:inline-flex; align-items:center; justify-content:center; gap:3px; overflow:hidden; }
+.rlogo .lchip svg { display:block; height:18px; width:auto; }
+.rlogo .wm { font-weight:700; font-size:15px; line-height:1; letter-spacing:-.4px; white-space:nowrap; }
+.rlogo .wm.sm { font-size:12px; letter-spacing:-.3px; }
+.rlogo .wm.xs { font-size:10px; letter-spacing:-.2px; }
+.rlogo .wm.lc { text-transform:lowercase; }
+.rcard .rco { font-size:14px; font-weight:700; color:var(--krds-text); line-height:1.3; }
+.rcard .rmodel { font-size:13px; color:var(--krds-text-sub); margin-top:4px; font-weight:700; line-height:1.35; min-height:32px; }
+.rcard .rparam { display:inline-block; font-size:11px; background:var(--krds-surface); color:var(--krds-text-sub); border-radius:4px; padding:2px 7px; margin-top:5px; font-weight:700; }
+.rcard .rstat { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; border-radius:4px; padding:3px 9px; margin-top:9px; align-self:flex-start; }
+.rstat.pass { background:var(--ok-bg); color:var(--krds-success); }
+.rstat.fail { background:var(--fail-bg); color:var(--krds-danger); }
+.rstat.add { background:#FFF6E0; color:var(--krds-warning-text); }
+.rstat.out { background:var(--krds-surface); color:var(--krds-caption); }
+.rcard .rnote { font-size:12px; color:var(--krds-caption); margin-top:8px; line-height:1.5; }
+
+/* ── 소비자 서비스 병기 ── */
+.cs-block { border:1px solid var(--krds-border); border-radius:8px; padding:14px 16px; }
+.cs-block .cs-head { font-size:14px; font-weight:700; color:var(--krds-text); margin-bottom:4px; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.cs-block .cs-basis { font-size:12px; color:var(--krds-caption); margin-bottom:10px; line-height:1.5; }
+.usebar-row { display:flex; align-items:center; gap:10px; margin:6px 0; font-size:13px; }
+.usebar-row .un { flex:0 0 96px; white-space:nowrap; display:flex; align-items:center; gap:5px; overflow:hidden; text-overflow:ellipsis; }
+.usebar-row .un .kmark { font-size:10px; background:var(--krds-primary-bg); color:var(--krds-primary-deep); border-radius:4px; padding:0 4px; font-weight:700; flex-shrink:0; }
+.usebar-row .utrack { flex:1; height:14px; background:var(--krds-surface); border-radius:4px; overflow:hidden; }
+.usebar-row .ufill { height:100%; border-radius:4px; }
+.usebar-row .uval { flex:0 0 44px; text-align:right; color:var(--krds-text); font-weight:700; }
+.maugrid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.mau-c { border:1px solid var(--krds-border); border-radius:8px; padding:10px 11px; }
+.mau-c.kr { border-color:var(--krds-primary); background:var(--krds-primary-bg); }
+.mau-c .mn { font-size:12px; color:var(--krds-caption); display:flex; align-items:center; gap:4px; }
+.mau-c .mn .kmark { font-size:9px; background:var(--krds-primary-bg); color:var(--krds-primary-deep); border-radius:4px; padding:0 4px; font-weight:700; }
+.mau-c .mv { font-size:20px; font-weight:700; color:var(--krds-text); line-height:1; margin-top:4px; }
+.mau-c .mv .u { font-size:11px; font-weight:400; color:var(--krds-caption); }
+.mau-c .mnote { font-size:11px; color:var(--krds-caption); margin-top:4px; line-height:1.4; }
+
+/* ── ETF ── */
+.etf-pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.etf-box { border:1px solid var(--krds-border); border-radius:8px; padding:16px 18px; }
+.etf-box .ename { font-size:16px; font-weight:700; color:var(--krds-text); line-height:1.3; }
+.etf-box .etick { font-size:12px; color:var(--krds-caption); margin-top:4px; }
+.etf-box .etop { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:12px; padding-bottom:12px; border-bottom:1px solid var(--krds-border); }
+.etf-box .eprice .plbl { font-size:12px; color:var(--krds-caption); }
+.etf-box .eprice .pval { font-size:22px; font-weight:700; color:var(--krds-text); line-height:1; }
+.etf-box .eprice .pval .u { font-size:12px; font-weight:400; color:var(--krds-caption); }
+.etf-box .echg { text-align:right; }
+.etf-box .echg .clbl { font-size:12px; color:var(--krds-caption); }
+.etf-box .echg .cval { font-size:30px; font-weight:700; line-height:1; color:var(--krds-info); }
+.etf-box .echg .cwin { font-size:12px; color:var(--krds-caption); margin-top:3px; }
+.etf-box .ecaph { font-size:12px; color:var(--krds-caption); margin:12px 0 6px; font-weight:700; }
+.cbar-row { display:flex; align-items:center; gap:8px; margin:5px 0; font-size:12px; }
+.cbar-row .cname { flex:0 0 96px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:700; }
+.cbar-row .cbar-track { flex:1; height:10px; background:var(--krds-surface); border-radius:4px; overflow:hidden; }
+.cbar-row .cbar-fill { height:100%; background:var(--krds-primary); border-radius:4px; }
+.cbar-row .cwt { flex:0 0 44px; text-align:right; color:var(--krds-text); font-weight:700; }
+.etf-box .ecapn { font-size:12px; color:var(--krds-caption); margin-top:8px; line-height:1.5; }
+
+/* ── 지수별 순위 병기 ── */
+.rank-trio { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.rank-box { border:1px solid var(--krds-border); border-radius:8px; padding:16px 18px; display:flex; flex-direction:column; }
+.rank-box .rank-meta { font-size:14px; font-weight:700; color:var(--krds-text); line-height:1.35; overflow-wrap:anywhere; word-break:keep-all; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.rank-box .rank-hero { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:12px 0 6px; }
+.rank-box .rank-hero .rh-num { font-size:44px; font-weight:700; color:var(--krds-text); line-height:1; letter-spacing:-1.5px; }
+.rank-box .rank-hero .rh-num .rh-suf { font-size:16px; font-weight:700; color:var(--krds-primary); margin-left:1px; letter-spacing:0; }
+.rank-box .rank-hero .rh-of { font-size:13px; color:var(--krds-caption); font-weight:700; }
+.rank-box .rank-hero .rh-chg { font-size:14px; font-weight:700; }
+.rank-box .rank-hero .rh-chg.up { color:var(--krds-danger); } .rank-box .rank-hero .rh-chg.down { color:var(--krds-info); }
+.rank-box .rank-score { font-size:13px; font-weight:700; color:var(--krds-text); margin-bottom:6px; overflow-wrap:anywhere; word-break:keep-all; }
+.rank-box .rank-top3 { font-size:13px; color:var(--krds-text-sub); font-weight:700; line-height:1.45; margin-bottom:6px; overflow-wrap:anywhere; word-break:keep-all; }
+.rank-box .rank-cap { font-size:12px; color:var(--krds-caption); line-height:1.5; margin-bottom:8px; overflow-wrap:anywhere; word-break:keep-all; }
+.rank-box .foot-src { margin-top:auto; }
+
+/* ── 뉴스(KRDS 표 톤 — 시맨틱 table) ── */
+.news-card h2 { justify-content:flex-start; gap:6px; font-size:15px; padding-bottom:0; border-bottom:none; margin:0 0 8px; }
+.news-table { width:100%; border-collapse:collapse; }
+.news-table caption { text-align:left; }
+.news-table tbody tr { border-bottom:1px solid var(--krds-border); }
+.news-table tbody tr:last-child { border-bottom:none; }
+.news-table td { padding:10px 0; vertical-align:top; font-size:13px; }
+.news-item-tags { margin-bottom:4px; }
+.news-table .t { font-weight:700; line-height:1.4; color:var(--krds-text); overflow-wrap:anywhere; word-break:keep-all; }
+.news-foot { display:flex; gap:7px; align-items:center; flex-wrap:wrap; margin-top:5px; }
+.news-empty { color:var(--krds-caption); font-size:13px; padding:12px 0; font-style:italic; }
+
+/* ── 푸터 ── */
+.mt-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:12px 0 16px; }
+.mt-card { border:1px solid var(--krds-border); border-radius:8px; padding:14px 16px; border-left:3px solid var(--krds-primary); }
+.mt-card .mt-key { font-size:14px; font-weight:700; color:var(--krds-text); line-height:1.4; }
+.mt-card .mt-sub { font-size:12px; color:var(--krds-caption); margin-top:6px; line-height:1.55; }
+.foot .note { font-size:12px; color:var(--krds-caption); border-top:1px solid var(--krds-border); padding-top:12px; margin-top:10px; line-height:1.6; }
+.foot .policy { font-size:13px; }
+.foot .policy b { color:var(--krds-text); }
+
+a { color:var(--krds-primary); }
+:focus-visible { outline:3px solid var(--krds-primary); outline-offset:2px; border-radius:4px; }
+
+@media print {
+  body { background:#fff; }
+  .card, .kpi-tile { box-shadow:none; break-inside:avoid; }
+  .roster { grid-template-columns:repeat(5,1fr); }
+}
+@media (max-width:900px) {
+  .cols3, .cols2, .cols2.even, .cols4 { grid-template-columns:1fr; }
+  .statgrid, .statgrid.two, .statgrid.three, .pat-pair, .etf-pair, .mt-grid, .kpi-strip, .rank-trio, .pol-grid, .it-grid { grid-template-columns:1fr; }
+  .roster { grid-template-columns:repeat(2,1fr); }
+  .maugrid { grid-template-columns:repeat(2,1fr); }
+  .rgrid { grid-template-columns:1fr; }
+  .kmap svg { width:260px; }
+}
+
+html{scroll-behavior:smooth;}
+.jumplink{display:inline-flex;align-items:center;gap:4px;float:right;margin:0 0 0 12px;font-size:12px;font-weight:700;color:#256EF4;text-decoration:none;border:1px solid #256EF4;border-radius:6px;padding:4px 10px;}
+.jumplink:hover{background:#256EF4;color:#fff;}
+#sec-ref{scroll-margin-top:16px;}
+.toplink{position:fixed;right:20px;bottom:20px;z-index:60;background:#256EF4;color:#fff;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:800;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.2);}
+.toplink:hover{filter:brightness(.92);}
+@media print{.toplink,.jumplink{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ Masthead(공식 배너 띠) ═══ -->
+<div class="masthead" id="top">
+  <div class="masthead-inner">
+    <span>인공지능을 활용한 보고서이며, 국가인공지능전략위원회의 공식의견과는 다릅니다.</span>
+  </div>
+</div>
+
+<!-- ═══ Identifier + Header ═══ -->
+<header class="gov-header">
+  <div class="gov-header-inner">
+    <div class="hdr-brand">
+      <img class="brandmark" src="data:image/png;base64,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" alt="국가인공지능전략위원회 엠블럼">
+      <div>
+        <div class="org">대통령직속 국가인공지능전략위원회</div>
+        <h1>인공지능 산업별 지형도</h1>
+      </div>
+    </div>
+    <div class="breadcrumb">홈 &rsaquo; 주간 동향 &rsaquo; <b>2026-06-22</b></div>
+    <div class="sub"><a href="#sec-ref" class="jumplink">참고지표로 이동 ↓</a>주간 정기 업데이트 · <b>2026-06-15 ~ 2026-06-22</b> · 기준일 <b>2026-06-22</b></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ═══════════════ 그룹 ① 갱신 지표 — KRDS 탭 ═══════════════ -->
+  <nav class="krds-tabs" role="tablist" aria-label="지표 그룹">
+    <span class="krds-tab active" role="tab" aria-selected="true">갱신 지표<span class="tsub">정기 갱신 · 주간/월간/분기 — 실제로 움직이는 핵심 추적 지표</span></span>
+  </nav>
+
+  <!-- ═══ 클러스터: 🤖 AI 모델·성능 ═══ -->
+  <div class="cluster">
+  <div class="cluster-head"><span class="ch-ico">🤖</span> AI 모델·성능 <span class="ch-sub">최신 모델 · SOTA · 한국 모델 글로벌 순위 · 챗봇 점유율</span></div>
+
+  <!-- ═══ 1행: 최신 모델 | SOTA | 점유율 도넛 ═══ -->
+  <div class="row cols3">
+
+    <!-- 최신 AI 모델 -->
+    <section class="card">
+      <h2>최신 AI 모델 <span class="subt">개발사별</span></h2>
+      <div class="headline">기간 내 신규 <span class="hl-key">GLM-5.2 1건</span> — 표준 SWE-bench 미등재로 SOTA 미반영</div>
+      <div class="modelgrid">
+        <div class="model-t">
+          <div class="row1"><span class="chip dev">Z.ai (중국)</span> <span class="mname">GLM-5.2</span> <span class="muted">6/16</span></div>
+          <div class="mcap">오픈웨이트 코딩 강세(MIT) · 744B MoE(활성 40B) · 표준 SWE-bench Verified 미보고</div>
+          <div class="mfoot"><span class="badge b">B</span> <a class="src" href="https://venturebeat.com/technology/z-ais-open-weights-glm-5-2-beats-gpt-5-5-on-multiple-long-horizon-coding-benchmarks-for-1-6th-the-cost" target="_blank" rel="noopener">원문↗</a></div>
+        </div>
+        <div class="model-t">
+          <div class="row1"><span class="chip dev">Moonshot AI (중국)</span> <span class="mname">Kimi K2.7 Code</span> <span class="muted">6/12</span></div>
+          <div class="mcap">[직전 이월·신규 아님] 오픈웨이트 코딩 특화 · 1T MoE(활성 32B) · 표준 벤치 미공개</div>
+          <div class="mfoot"><span class="badge b">B</span> <a class="src" href="https://www.marktechpost.com/2026/06/12/moonshot-ai-releases-kimi-k2-7-code-a-coding-model-reporting-21-8-on-kimi-code-bench-v2-over-k2-6/" target="_blank" rel="noopener">원문↗</a></div>
+        </div>
+        <div class="model-t">
+          <div class="row1"><span class="chip dev">Anthropic</span> <span class="mname">Claude Fable 5</span> <span class="muted">6/9</span></div>
+          <div class="mcap">[직전 이월·신규 아님] 코딩 SOTA 보유(SWE-bench Verified 95.0%) · 1M 컨텍스트</div>
+          <div class="mfoot"><span class="badge a">A</span> <a class="src" href="https://www.anthropic.com/news/claude-fable-5-mythos-5" target="_blank" rel="noopener">원문↗</a></div>
+        </div>
+      </div>
+      <div class="foot-src">기간 내 신규 1건(GLM-5.2) · 나머지 직전 주차 이월(참고용).</div>
+    </section>
+
+    <!-- SOTA 모델 -->
+    <section class="card">
+      <h2>SOTA 모델 <span class="subt">역량영역별 1위</span></h2>
+      <div class="headline">5개 역량 SOTA <span class="hl-key">전부 변동 0</span> — 프런티어 정체</div>
+      <div class="sotagrid">
+        <div class="sota-t">
+          <div class="scap">Coding</div>
+          <div class="smid"><div class="smname">Claude Fable 5</div><div class="smbench">SWE-bench Verified · Anthropic</div></div>
+          <div class="sscore">95.0</div>
+          <div class="ssrc"><span class="badge a">A</span> <a class="src" href="https://llm-stats.com/benchmarks/swe-bench-verified" target="_blank" rel="noopener">↗</a></div>
+        </div>
+        <div class="sota-t">
+          <div class="scap">Reasoning</div>
+          <div class="smid"><div class="smname">Claude Mythos Preview</div><div class="smbench">GPQA Diamond · Anthropic</div></div>
+          <div class="sscore">94.6</div>
+          <div class="ssrc"><span class="badge a">A</span> <a class="src" href="https://llm-stats.com/benchmarks/gpqa" target="_blank" rel="noopener">↗</a></div>
+        </div>
+        <div class="sota-t">
+          <div class="scap">Cyber</div>
+          <div class="smid"><div class="smname">Claude Mythos Preview</div><div class="smbench">Cybench · Anthropic (표본 희소)</div></div>
+          <div class="sscore">100</div>
+          <div class="ssrc"><span class="badge a">A</span> <a class="src" href="https://llm-stats.com/benchmarks/cybench" target="_blank" rel="noopener">↗</a></div>
+        </div>
+        <div class="sota-t">
+          <div class="scap">Multimodal</div>
+          <div class="smid"><div class="smname">GPT-5.4 Pro</div><div class="smbench">MMMU-Pro · OpenAI</div></div>
+          <div class="sscore">94.0</div>
+          <div class="ssrc"><span class="badge b">B</span> <a class="src" href="https://benchlm.ai/benchmarks/mmmuPro" target="_blank" rel="noopener">↗</a></div>
+        </div>
+        <div class="sota-t">
+          <div class="scap">Agent</div>
+          <div class="smid"><div class="smname">Claude Sonnet 4.5</div><div class="smbench">GAIA (HAL full-system) · Anthropic</div></div>
+          <div class="sscore">74.6</div>
+          <div class="ssrc"><span class="badge b">B</span> <a class="src" href="https://hal.cs.princeton.edu/gaia" target="_blank" rel="noopener">↗</a></div>
+        </div>
+      </div>
+      <div class="foot-src">5개 SOTA 전부 delta 0.0. Agent(GAIA) 직전 sample→live 승격. GAIA는 보드 세팅별 30~50p 스프레드 — 절대치 단정 금지.</div>
+    </section>
+
+    <!-- LLM 점유율 도넛 (aux) -->
+    <section class="card">
+      <h2>글로벌 LLM 챗봇 점유율 <span class="subt">미국 · 2026-06-05</span></h2>
+      <div class="aux">⚠ 보조지표 — 참고용(시장 데이터). 정책 증빙 미합산.</div>
+      <div class="headline"><span class="hl-key">ChatGPT 53.1%</span> 과반 · 2위 Claude 21.1%</div>
+      <div class="donut-wrap">
+        <div class="donut" style="background:conic-gradient(var(--c1) 0% 53.1%, var(--c2) 53.1% 74.2%, var(--c3) 74.2% 87.3%, var(--c4) 87.3% 96.0%, var(--c5) 96.0% 98.7%, var(--c6) 98.7% 100%);">
+          <div class="donut-hole"><span class="dh-top">1위</span><span class="dh-big">53%</span></div>
+        </div>
+        <ul class="legend">
+          <li><span class="sw" style="background:var(--c1)"></span>ChatGPT<span class="lv">53.1%</span></li>
+          <li><span class="sw" style="background:var(--c2)"></span>Claude<span class="lv">21.1%</span></li>
+          <li><span class="sw" style="background:var(--c3)"></span>Gemini<span class="lv">13.1%</span></li>
+          <li><span class="sw" style="background:var(--c4)"></span>Copilot<span class="lv">8.7%</span></li>
+          <li><span class="sw" style="background:var(--c5)"></span>Perplexity<span class="lv">2.7%</span></li>
+          <li><span class="sw" style="background:var(--c6)"></span>Grok·DeepSeek·기타<span class="lv">1.3%</span></li>
+        </ul>
+      </div>
+      <div class="foot-src"><span class="badge b">B</span> First Page Sage · 자체 분석 추정(웹트래픽 아님) <a class="src" href="https://firstpagesage.com/reports/top-generative-ai-chatbots/" target="_blank" rel="noopener">원문↗</a> — 국산 모델 미포착</div>
+    </section>
+  </div>
+
+  <!-- ═══ 한국 AI 모델 글로벌 순위 (korea_model_ranking) — 모델 성능 계열, SOTA 인접 ═══ -->
+  <div class="row">
+    <section class="card">
+      <h2>한국 AI 모델 글로벌 순위 <span class="subt">Artificial Analysis Intelligence Index v4.1 · 2026-06</span></h2>
+      <div class="headline">종합 한국 최상위 <span class="hl-key">K-EXAONE(추론) #44/92·25점</span> — 종합·오픈웨이트 모수 분리</div>
+      <div class="kmr-grid">
+
+        <!-- 좌: 종합순위 (overall, 전체 220 모수) -->
+        <div class="kmr-block">
+          <div class="kmr-bh">종합순위 <span class="muted">전체 220개 모수</span></div>
+          <div class="kmr-bsub">9개 평가 가중 종합지수(GDPval·HLE·GPQA Diamond 등). 한국 모델 위치(분모 병기).</div>
+          <div class="kmr-ctx">
+            <div class="kmr-ctx-t">글로벌 종합 TOP3</div>
+            <div class="kmr-ctx-i"><span class="kr-rk">#1</span> <span class="kr-nm">Claude Opus 4.8</span> <span class="kr-dv">Anthropic</span></div>
+            <div class="kmr-ctx-i"><span class="kr-rk">#2</span> <span class="kr-nm">GPT-5.5</span> <span class="kr-dv">OpenAI</span></div>
+            <div class="kmr-ctx-i"><span class="kr-rk">#3</span> <span class="kr-nm">Claude Opus 4.7 (Adaptive)</span> <span class="kr-dv">Anthropic</span></div>
+          </div>
+
+          <div class="kmr-kcard">
+            <div class="kmr-logo"><span class="lchip"><span class="wm" style="color:#A50034">LG</span></span></div>
+            <div class="kmr-kmid">
+              <div class="kmr-knm">K-EXAONE (추론)</div><div class="kmr-dev" style="font-size:11px;color:#6b7280;font-weight:600;margin-top:1px;">LG AI연구원</div>
+              <div class="kmr-kchips">
+                <span class="kmr-tag rsn">추론형</span>
+                <span class="kmr-tag ow">오픈웨이트</span>
+                <span class="kmr-sc">236B/23B MoE</span>
+                <span class="kmr-sc score">점수 25</span>
+              </div>
+            </div>
+            <div class="kmr-rank"><span class="kmr-hash">#44</span><span class="kmr-den">/ 92 클래스내</span></div>
+          </div>
+
+          <div class="kmr-kcard">
+            <div class="kmr-logo"><span class="lchip"><span class="wm" style="color:#A50034">LG</span></span></div>
+            <div class="kmr-kmid">
+              <div class="kmr-knm">K-EXAONE (비추론)</div><div class="kmr-dev" style="font-size:11px;color:#6b7280;font-weight:600;margin-top:1px;">LG AI연구원</div>
+              <div class="kmr-kchips">
+                <span class="kmr-tag nrsn">비추론</span>
+                <span class="kmr-tag ow">오픈웨이트</span>
+                <span class="kmr-sc">236B/23B MoE</span>
+                <span class="kmr-sc score">점수 17</span>
+              </div>
+            </div>
+            <div class="kmr-rank"><span class="kmr-hash">#22</span><span class="kmr-den">/ 43 클래스내</span></div>
+          </div>
+
+          <div class="kmr-kcard">
+            <div class="kmr-logo"><span class="lchip"><span class="wm lc" style="color:#7E6FFF">upstage</span></span></div>
+            <div class="kmr-kmid">
+              <div class="kmr-knm">Solar Pro 3</div><div class="kmr-dev" style="font-size:11px;color:#6b7280;font-weight:600;margin-top:1px;">업스테이지</div>
+              <div class="kmr-kchips">
+                <span class="kmr-tag rsn">추론형</span>
+                <span class="kmr-tag prop">비공개</span>
+                <span class="kmr-sc">102B</span>
+                <span class="kmr-sc score">점수 14</span>
+              </div>
+            </div>
+            <div class="kmr-rank"><span class="kmr-hash">#50</span><span class="kmr-den">/ 220 전체</span></div>
+          </div>
+        </div>
+
+        <!-- 우: 오픈웨이트 순위 (open_weight, 별도 모수) -->
+        <div class="kmr-block">
+          <div class="kmr-bh">오픈웨이트 순위 <span class="muted">공개가중치 모수(별도)</span></div>
+          <div class="kmr-bsub">공개가중치 모델만의 별도 모수 — 종합순위와 혼용 금지.</div>
+          <div class="kmr-ctx">
+            <div class="kmr-ctx-t">글로벌 오픈웨이트 TOP3</div>
+            <div class="kmr-ctx-i"><span class="kr-rk">#1</span> <span class="kr-nm">GLM-5.2</span> <span class="kr-dv">Z.AI</span> <span class="kr-sc">51</span></div>
+            <div class="kmr-ctx-i"><span class="kr-rk">#2</span> <span class="kr-nm">Qwen3.7 Max</span> <span class="kr-dv">Alibaba</span> <span class="kr-sc">46</span></div>
+            <div class="kmr-ctx-i"><span class="kr-rk">#3</span> <span class="kr-nm">MiniMax M3</span> <span class="kr-dv">MiniMax</span> <span class="kr-sc">44</span></div>
+          </div>
+
+          <div class="kmr-kcard">
+            <div class="kmr-logo"><span class="lchip"><span class="wm" style="color:#A50034">LG</span></span></div>
+            <div class="kmr-kmid">
+              <div class="kmr-knm">K-EXAONE (비추론)</div><div class="kmr-dev" style="font-size:11px;color:#6b7280;font-weight:600;margin-top:1px;">LG AI연구원</div>
+              <div class="kmr-kchips">
+                <span class="kmr-tag nrsn">비추론</span>
+                <span class="kmr-tag ow">오픈웨이트</span>
+                <span class="kmr-sc score">점수 17</span>
+              </div>
+            </div>
+            <div class="kmr-rank"><span class="kmr-hash">#22</span><span class="kmr-den">/ 43 클래스내</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot-src"><span class="badge a">A</span> 한국 모델: Artificial Analysis 모델 페이지 직접 판독 · 글로벌 top 맥락 <span class="badge b">B</span> · 상시 재측정(72h 윈도)으로 변동 <a class="src" href="https://artificialanalysis.ai/models/k-exaone" target="_blank" rel="noopener">원문↗</a> — 종합≠오픈웨이트 모수 분리, 추론/비추론 구분, null 정직 표기</div>
+    </section>
+  </div>
+  </div><!-- /클러스터 🤖 AI 모델·성능 -->
+
+  <!-- ═══ 클러스터: 🏗 AI 인프라 (반도체·메모리·데이터센터) ═══ -->
+  <div class="cluster">
+  <div class="cluster-head"><span class="ch-ico">🏗</span> AI 인프라 <span class="ch-sub">반도체 · 메모리(DRAM·수출) · 데이터센터 × 전력</span></div>
+
+  <!-- ═══ 반도체 매출 | DRAM 기업별 바 ═══ -->
+  <div class="row cols2">
+    <section class="card">
+      <h2>AI 반도체 매출 <span class="subt">분기 공시 · 억달러</span></h2>
+      <div class="headline">AI 칩 수요 초강세 — <span class="hl-key">Broadcom YoY +143%</span> 최고 성장</div>
+      <div class="statgrid">
+        <div class="stat">
+          <div class="label">NVIDIA</div>
+          <div class="big">752<span class="u"> 억$</span></div>
+          <div class="delta"><span class="up">▲92%</span> <span class="muted">YoY</span></div>
+          <div class="seg">Data Center · 26Q1 FY27 <span class="badge a">A</span> <a class="src" href="https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000051/q1fy27pr.htm" target="_blank" rel="noopener">↗</a></div>
+        </div>
+        <div class="stat">
+          <div class="label">AMD</div>
+          <div class="big">58<span class="u"> 억$</span></div>
+          <div class="delta"><span class="up">▲57%</span> <span class="muted">YoY</span></div>
+          <div class="seg">Data Center · 26Q1 <span class="badge a">A</span> <a class="src" href="https://www.sec.gov/Archives/edgar/data/0000002488/000000248826000072/q12026991.htm" target="_blank" rel="noopener">↗</a></div>
+        </div>
+        <div class="stat">
+          <div class="label">Broadcom</div>
+          <div class="big">108<span class="u"> 억$</span></div>
+          <div class="delta"><span class="up">▲143%</span> <span class="muted">YoY</span></div>
+          <div class="seg">AI 반도체 · 26Q2 FY26 <span class="badge a">A</span> <a class="src" href="https://www.prnewswire.com/news-releases/broadcom-inc-announces-second-quarter-fiscal-year-2026-financial-results-and-quarterly-dividend-302790698.html" target="_blank" rel="noopener">↗</a></div>
+        </div>
+      </div>
+      <div class="foot-src">⚠ 3사 세그먼트 정의 상이 — <b>단순 합산 금지</b>. 분기 공시 이월(신규 공시 없음).</div>
+    </section>
+
+    <section class="card">
+      <h2>DRAM 기업별 매출 <span class="subt">2026Q1 · 억달러</span></h2>
+      <div class="aux">⚠ 보조지표 — 참고용(시장 데이터). 정책 증빙 미합산.</div>
+      <div class="headline"><span class="hl-key">Samsung 38.6%</span> 선두 · 시장 합계 971억달러(QoQ +85.3%)</div>
+      <div class="bars">
+        <div class="bar-col"><span class="val">374</span><div class="bar" style="height:150px; background:var(--c1)"></div><span>Samsung</span></div>
+        <div class="bar-col"><span class="val">280</span><div class="bar" style="height:112px; background:var(--c2)"></div><span>SK Hynix</span></div>
+        <div class="bar-col"><span class="val">217</span><div class="bar" style="height:87px; background:var(--c3)"></div><span>Micron</span></div>
+        <div class="bar-col"><span class="val">100</span><div class="bar" style="height:40px; background:var(--c4)"></div><span>기타</span></div>
+      </div>
+      <div class="foot-src">Samsung 374(38.6%) · SK Hynix 280(28.8%) · Micron 217(22.4%) · 기타 100(10.2%). <span class="badge b">B</span> TrendForce/Counterpoint <a class="src" href="https://www.techtimes.com/articles/318052/20260609/samsung-leads-dram-market-share-386-sk-hynix-trails-revenue-tops-profit-margins.htm" target="_blank" rel="noopener">원문↗</a></div>
+    </section>
+  </div>
+
+  <!-- ═══ 메모리 가격전망 | 수출액 ═══ -->
+  <div class="row cols2 even">
+    <section class="card">
+      <h2>메모리 가격 전망 <span class="subt">2026Q2 고정거래가 QoQ 전망</span></h2>
+      <div class="aux">⚠ 보조지표 — 참고용(시장 데이터). 정책 증빙 미합산.</div>
+      <div class="headline">메모리 고정거래가 <span class="hl-key">전 품목 두 자릿수 상승 전망</span></div>
+      <div class="statgrid three">
+        <div class="stat"><div class="label">Conventional DRAM</div><div class="big">+58~63<span class="u"> %</span></div><div class="seg">QoQ 전망</div></div>
+        <div class="stat"><div class="label">PC DDR5 DRAM</div><div class="big">+43~48<span class="u"> %</span></div><div class="seg">QoQ 전망</div></div>
+        <div class="stat"><div class="label">NAND Flash</div><div class="big">+70~75<span class="u"> %</span></div><div class="seg">QoQ 전망</div></div>
+      </div>
+      <div class="foot-src">참고 현물: 16GB DDR5 모듈 평균가 201달러(2026-04말, <span class="up">▲41.55%</span> MoM). 분기 전망 이월(신규 발표 없음). <span class="badge b">B</span> TrendForce <a class="src" href="https://www.tomshardware.com/pc-components/dram/dram-and-nand-contract-prices-to-climb-again-in-q2" target="_blank" rel="noopener">원문↗</a></div>
+    </section>
+
+    <section class="card">
+      <h2>한국 메모리 수출액 <span class="subt">2026-05 · 억달러</span></h2>
+      <div class="headline">D램 수출 <span class="hl-key">186억달러(YoY +369.8%)</span> 급증</div>
+      <div class="statgrid two">
+        <div class="stat"><div class="label">D램 (2026-05)</div><div class="big">186<span class="u"> 억$</span></div><div class="delta"><span class="up">▲369.8%</span> <span class="muted">YoY</span></div></div>
+        <div class="stat"><div class="label">낸드 (2026-05)</div><div class="big">17<span class="u"> 억$</span></div><div class="delta"><span class="up">▲206.8%</span> <span class="muted">YoY</span></div></div>
+      </div>
+      <div class="foot-src">반도체 전체 5월 371.6억달러(YoY +169.4%), 1~5월 누계 1,475억달러. 산업부 5월 확정치 이월(6월 확정치 7월 초). <span class="badge a">A</span> 산업통상부 <a class="src" href="https://www.korea.kr/briefing/pressReleaseView.do?newsId=156764654" target="_blank" rel="noopener">원문↗</a></div>
+    </section>
+  </div>
+
+  <!-- ═══ 데이터센터 (A) 국내/국외 신규발표 2카드 ═══ -->
+  <div class="row cols2 even">
+    <section class="card">
+      <h2>국내 데이터센터 신규발표 <span class="subt">본 주차 적격 신규 발표</span> <span class="cnt zero">0</span></h2>
+      <div class="dc-none">본 보고기간 적격 신규 발표 없음</div>
+      <div class="dc-oop">
+        <span class="oop-tag">참고(기간 밖)</span>
+        <span>SK그룹·AWS — '대한민국 AI 고속도로, 울산 AI 데이터센터' 출범식(총 7조원·GPU 6만 장·40→103→1,000MW) <b>(기간 밖 2025-06-20)</b> <a class="src" href="https://www.thelec.kr/news/articleView.html?idxno=37326" target="_blank" rel="noopener">원문↗</a></span>
+      </div>
+      <div class="foot-src">울산 출범식은 2025-06-20 발생(연도 정정) → 본 보고기간(06-15~22) 밖이라 미카운트. 항목은 사유 병기로 보존.</div>
+    </section>
+
+    <section class="card">
+      <h2>국외 데이터센터 신규발표 <span class="subt">본 주차 적격 신규 발표</span> <span class="cnt zero">0</span></h2>
+      <div class="dc-none">본 보고기간 적격 신규 발표 없음</div>
+      <div class="foot-src">검색 결과는 2026 연간 capex 가이던스·기발표/진행 중 프로젝트 위주 — 보고기간 내 '신규 단일 발표' 이벤트 아님(가이던스·landscape 미카운트 원칙).</div>
+    </section>
+  </div>
+
+  <!-- ═══ 데이터센터 (B) 지역별 AIDC 현황 지도 (전폭, 프로토타입) ═══ -->
+  <section class="card" style="margin-bottom:16px">
+    <h2>지역별 AIDC × 전력 여유수준 <span class="subt">시·도 면 = 전력자급률 · 버블 = AI 데이터센터</span> <span class="proto-badge">전력 결합 · 월간 갱신</span></h2>
+    <div class="headline">전력 여유 지역으로 AIDC 분산 — <span class="hl-key">'여유' 면(경북·전남·충남·강원)에 신규 거점 집중</span>, 수도권(서울·경기) '부족·보통'</div>
+
+    <div class="kmap-wrap">
+      <div class="kmap">
+        <svg viewBox="0 0 300 359" role="img" aria-label="대한민국 시·도 행정구역 지도 위 지역별 AI 데이터센터(AIDC) 버블맵 (프로토타입·근사 배치)">
+          <g class="sido-layer">
+            <path class="sido pw-mid" data-sido="경기" d="M175.2,117.9 171.6,123.9 168.7,123.4 168.3,126.7 164.4,129.2 164.5,130.4 161.5,129.6 158.0,130.6 158.0,132.3 154.2,134.0 153.7,135.0 154.7,136.2 149.2,139.1 148.0,141.7 142.8,137.4 137.6,135.9 135.2,138.4 130.6,138.6 125.4,140.9 125.2,139.3 122.8,138.8 118.3,131.7 116.1,131.7 117.2,126.3 116.5,125.7 119.2,122.7 118.4,120.9 115.8,121.6 112.3,125.3 112.0,122.9 110.7,121.9 111.7,117.4 110.9,116.4 112.2,114.5 118.3,115.8 118.4,114.1 120.5,112.6 114.5,111.6 112.3,108.1 117.7,100.6 115.5,98.0 117.0,93.0 120.3,94.0 120.3,98.8 123.0,97.4 125.1,101.8 126.4,100.8 127.2,101.7 128.6,101.3 131.0,99.4 133.0,100.2 133.9,102.3 139.5,98.7 140.4,97.0 139.1,96.3 141.6,92.5 141.2,91.1 136.8,92.6 137.8,89.3 135.7,82.5 133.8,83.1 131.8,82.2 129.6,85.6 129.9,86.9 127.7,85.3 125.6,86.3 125.0,90.0 122.0,91.4 119.3,89.3 118.6,91.0 114.5,90.2 110.5,86.8 108.7,89.1 105.5,90.5 102.9,85.7 102.0,77.3 107.7,78.3 110.8,75.6 111.5,72.6 110.7,72.0 112.5,69.9 111.3,68.5 111.4,63.4 113.9,64.5 115.7,63.7 115.4,62.1 120.7,60.6 120.9,57.6 123.3,58.8 124.5,56.3 124.5,54.6 121.9,53.1 120.6,54.3 118.7,54.1 115.9,50.7 120.5,45.5 123.3,43.7 124.6,45.0 128.0,44.6 128.8,45.5 129.9,44.5 129.4,42.9 137.3,38.6 137.4,42.3 140.5,43.0 142.1,48.3 144.1,49.3 146.9,46.7 148.0,47.1 147.6,51.5 149.3,51.6 149.9,53.1 153.6,51.7 155.3,52.6 156.4,51.6 158.0,58.9 162.9,60.1 163.1,62.5 166.6,63.4 167.5,67.0 166.5,69.4 162.4,71.8 162.0,73.1 162.6,74.2 161.8,75.5 163.2,77.8 161.0,80.0 164.2,80.7 162.7,86.4 164.0,87.5 166.6,85.8 172.9,90.6 177.9,90.7 181.3,93.1 176.8,96.5 178.6,102.2 177.0,106.5 175.9,106.8 176.5,111.2 175.2,117.9Z M107.6,111.1 105.3,113.2 107.6,114.5 110.1,117.2 109.9,118.3 107.8,117.7 107.3,118.5 106.2,117.6 105.2,118.8 103.8,118.6 104.9,115.0 104.0,113.2 107.6,111.1Z"/>
+            <path class="sido pw-high" data-sido="인천" d="M118.6,91.0 115.7,95.9 117.1,102.3 110.7,108.5 108.1,108.6 107.5,93.0 105.5,90.5 110.5,86.8 114.5,90.2 118.6,91.0Z M102.7,79.4 104.0,89.3 102.1,91.1 93.9,88.9 93.6,87.2 95.5,85.9 91.8,80.7 92.2,75.5 97.4,72.6 101.6,76.1 102.7,79.4Z M105.8,96.9 97.7,102.8 92.6,99.4 100.1,96.7 101.1,94.6 105.8,96.9Z M91.0,78.6 90.5,81.0 93.6,82.6 93.8,84.6 90.8,86.6 90.3,83.6 87.5,81.6 88.6,79.0 91.0,78.6Z M87.2,73.7 91.4,74.9 84.9,78.3 83.8,77.2 84.7,74.5 87.2,73.7Z M99.4,112.6 101.3,114.8 98.7,117.2 97.1,116.6 97.5,113.7 99.4,112.6Z M77.9,113.7 81.0,116.5 79.9,118.0 76.9,116.9 77.9,113.7Z M95.9,103.5 97.7,105.4 96.0,106.8 95.9,103.5Z M89.8,92.5 92.9,94.7 90.9,95.0 89.8,92.5Z M98.9,93.7 99.2,96.2 97.1,95.1 98.9,93.7Z M54.6,83.7 52.7,85.7 52.7,83.6 54.6,83.7Z M83.1,83.0 83.6,85.5 82.0,84.5 83.1,83.0Z"/>
+            <path class="sido pw-low" data-sido="서울" d="M117.0,93.0 119.3,89.3 122.0,91.4 123.5,91.1 125.0,90.0 125.6,86.3 127.7,85.3 129.4,87.3 131.8,82.2 136.5,83.0 136.3,85.9 137.8,89.3 136.8,92.6 141.2,91.1 141.6,92.5 139.1,96.3 140.4,97.0 139.5,98.7 133.9,102.3 133.0,100.2 131.0,99.4 128.6,101.3 127.2,101.7 126.4,100.8 125.1,101.8 123.0,97.4 120.3,98.8 120.3,94.0 117.0,93.0Z"/>
+            <path class="sido pw-high" data-sido="강원" d="M271.2,123.1 265.7,125.2 262.9,128.4 263.4,130.6 261.1,130.8 255.2,126.4 253.4,128.9 244.9,127.1 243.4,130.5 240.5,130.0 239.3,128.1 236.8,127.4 234.8,129.6 234.8,131.7 227.5,128.3 222.1,127.2 220.6,125.5 215.3,125.6 213.7,124.4 214.0,123.0 210.2,122.2 207.6,123.7 205.9,122.0 210.0,118.0 208.9,117.4 206.2,118.5 202.1,115.5 200.5,117.7 197.6,117.5 192.5,119.9 191.3,115.8 189.3,114.8 185.5,117.2 186.4,120.0 184.4,122.6 182.6,121.7 177.7,123.2 175.6,120.9 175.0,118.3 176.5,111.2 175.9,106.8 177.0,106.5 178.6,102.2 176.8,96.5 181.3,93.1 177.9,90.7 172.9,90.6 166.6,85.8 164.0,87.5 162.7,86.4 164.2,80.7 161.0,80.0 163.2,77.8 161.8,75.5 162.6,74.2 162.0,73.1 162.4,71.8 166.5,69.4 167.3,64.6 166.6,63.4 163.1,62.5 162.9,60.1 158.0,58.9 156.4,51.6 155.3,52.6 153.6,51.7 149.9,53.1 149.3,51.6 147.6,51.5 148.0,47.1 146.9,46.7 144.1,49.3 142.1,48.3 140.5,43.0 137.4,42.3 137.3,38.6 140.3,35.5 141.6,36.7 145.3,35.1 149.3,36.8 153.9,35.1 161.0,37.7 165.7,35.0 168.7,35.9 177.0,34.0 178.5,36.1 183.3,34.8 194.0,37.0 203.0,31.9 206.9,28.0 208.1,25.3 208.6,16.5 209.3,15.2 211.0,14.9 218.0,26.8 217.4,28.4 222.9,37.0 225.2,42.3 226.4,49.0 242.4,72.7 252.9,84.0 252.2,86.4 256.5,91.4 256.8,95.5 260.7,100.2 261.3,103.2 264.4,105.8 265.6,110.1 269.1,113.2 270.7,116.5 269.7,119.5 271.2,123.1Z"/>
+            <path class="sido pw-high" data-sido="충남" d="M125.4,140.9 130.6,138.6 135.2,138.4 137.6,135.9 139.4,135.9 146.9,140.2 149.1,142.3 149.0,143.9 150.8,144.6 150.6,146.3 154.7,148.9 155.3,151.7 150.8,152.1 151.1,153.6 149.1,154.4 147.8,156.6 140.5,153.5 138.8,155.5 140.6,157.6 140.1,162.9 142.3,164.8 141.0,169.8 142.8,175.0 146.1,177.5 147.6,177.0 145.6,186.7 151.1,193.6 153.0,187.5 155.1,191.9 157.1,193.3 158.6,191.1 162.4,189.2 166.3,191.5 165.9,197.7 168.7,202.5 167.9,202.7 167.5,207.0 162.8,205.1 162.5,208.2 157.9,208.8 156.1,205.6 154.6,207.0 153.1,205.0 150.9,198.0 145.8,199.3 145.5,200.6 139.0,201.2 138.8,202.4 134.5,200.7 133.8,197.1 132.2,197.5 128.3,196.0 124.4,197.2 122.7,203.1 115.9,205.8 115.1,207.5 110.7,206.8 111.1,205.2 109.0,203.5 109.1,200.7 105.7,197.4 104.7,198.0 101.9,196.4 103.7,193.0 103.0,189.9 103.9,188.1 101.3,183.6 104.2,181.9 101.7,179.5 100.0,179.3 101.0,176.1 99.6,170.5 100.2,169.5 98.0,164.4 99.7,162.9 98.6,161.4 98.9,158.6 97.7,158.4 96.6,163.3 93.1,161.4 92.9,158.2 91.7,158.3 92.6,161.4 88.8,164.5 88.4,158.7 87.1,157.9 87.5,154.1 83.2,157.8 79.2,158.3 80.1,155.7 81.6,154.6 83.8,155.5 84.6,154.3 81.3,151.7 79.5,154.6 77.5,150.6 79.9,149.4 80.9,146.7 80.1,145.7 83.0,145.0 83.9,141.2 86.2,140.4 84.6,142.6 85.9,143.9 87.5,142.4 88.9,139.0 88.3,136.5 89.8,135.8 89.4,139.6 90.5,141.8 89.0,145.4 90.3,145.7 88.2,147.3 91.5,147.3 90.7,144.4 93.0,144.8 93.1,142.9 95.8,140.7 94.1,138.0 91.3,136.8 90.8,134.3 96.7,132.8 99.8,136.2 100.4,135.1 98.4,132.0 101.1,129.0 109.4,134.0 113.3,133.9 117.8,135.6 120.8,144.0 125.6,141.9 125.4,140.9Z M92.9,162.4 95.1,164.6 95.0,169.3 97.3,176.7 96.3,177.7 93.5,177.3 90.8,173.1 89.9,164.4 92.9,162.4Z M97.2,179.1 98.7,181.4 94.4,179.5 97.2,179.1Z"/>
+            <path class="sido pw-mid" data-sido="세종" d="M147.8,156.6 149.1,157.3 147.4,160.7 149.1,164.6 154.7,167.7 155.0,171.1 153.5,170.7 152.2,171.8 151.8,174.6 150.2,176.5 146.1,177.5 142.8,175.0 141.0,169.8 142.3,164.8 140.1,162.9 140.6,157.6 138.8,155.5 140.5,153.5 147.8,156.6Z"/>
+            <path class="sido pw-low" data-sido="대전" d="M160.1,190.0 157.1,193.3 155.1,191.9 153.0,187.5 151.1,193.6 145.6,186.7 147.6,177.0 150.2,176.5 153.5,170.7 154.8,171.9 154.7,174.0 160.7,174.4 159.9,175.7 160.7,177.5 163.0,176.6 163.8,178.2 162.0,179.0 160.6,183.0 160.1,190.0Z"/>
+            <path class="sido pw-low" data-sido="충북" d="M228.9,129.0 227.6,131.0 224.9,130.6 222.5,134.4 220.7,134.8 216.4,139.2 215.4,143.0 216.9,145.0 215.2,147.8 212.9,147.6 212.0,148.6 209.3,147.5 207.0,144.4 204.6,143.2 204.1,145.1 202.9,145.0 203.2,147.5 198.5,146.1 196.5,148.2 193.7,147.4 192.1,152.5 194.4,155.4 191.5,154.1 189.4,154.7 187.9,153.2 186.1,156.5 183.5,156.6 186.2,158.5 186.1,162.0 183.6,161.2 182.7,159.3 181.2,160.9 181.3,162.4 178.2,164.0 179.7,165.5 182.0,165.7 184.7,170.1 183.1,172.1 182.7,175.3 183.7,181.2 180.8,184.7 181.4,187.2 183.1,187.3 183.8,186.0 188.3,189.1 190.8,187.5 193.0,188.7 192.0,189.9 193.3,192.8 189.4,192.8 188.7,193.7 189.9,196.3 188.2,198.9 187.9,202.5 182.9,205.9 181.5,204.7 177.6,206.5 172.7,205.1 171.5,203.0 170.0,204.7 165.9,197.7 166.3,191.5 162.4,189.2 160.1,190.0 159.7,188.5 162.0,179.0 163.8,178.2 163.0,176.6 160.7,177.5 159.9,175.7 160.7,174.4 154.7,174.0 154.7,167.7 149.1,164.6 147.4,160.7 149.1,157.3 147.8,156.6 149.1,154.4 151.1,153.6 150.8,152.1 155.3,151.7 154.7,148.9 150.6,146.3 150.8,144.6 149.0,143.9 149.1,142.3 148.0,141.7 149.2,139.1 154.7,136.2 153.7,135.0 154.2,134.0 158.0,132.3 158.0,130.6 161.5,129.6 164.5,130.4 164.4,129.2 168.3,126.7 168.7,123.4 171.6,123.9 175.2,117.9 175.6,120.9 177.7,123.2 182.6,121.7 184.4,122.6 186.4,120.0 185.5,117.2 189.3,114.8 191.3,115.8 192.5,119.9 197.6,117.5 200.5,117.7 202.1,115.5 206.2,118.5 208.9,117.4 210.0,118.0 209.5,119.3 206.6,121.2 206.4,123.0 207.6,123.7 210.2,122.2 214.0,123.0 213.7,124.4 215.3,125.6 219.1,125.0 222.1,127.2 228.9,129.0Z"/>
+            <path class="sido pw-mid" data-sido="전북" d="M168.7,202.5 170.0,204.7 171.5,203.0 172.7,205.1 177.6,206.5 181.5,204.7 184.8,211.9 180.8,217.4 175.1,219.1 173.5,222.5 170.1,225.4 168.1,235.7 165.7,239.6 169.6,245.5 168.6,247.2 170.4,248.3 167.1,254.3 167.7,256.8 166.0,258.3 158.8,254.3 156.4,254.8 153.7,258.9 152.0,257.6 149.0,259.0 146.3,258.3 144.0,256.5 143.6,258.0 140.8,256.8 137.7,259.2 133.6,257.8 135.0,254.3 132.6,252.6 133.7,249.5 132.9,247.0 129.1,249.8 129.5,251.6 126.8,252.2 125.2,248.8 120.5,245.4 115.9,248.1 114.9,253.6 113.0,255.5 111.1,255.4 109.8,257.7 107.3,256.6 106.0,257.4 106.6,258.8 103.0,258.6 100.1,252.9 100.5,251.0 96.9,249.0 100.2,243.0 107.3,241.3 108.1,239.3 110.9,240.4 111.3,238.5 100.7,238.1 99.1,234.6 107.2,228.2 108.7,226.1 108.4,223.2 113.0,222.4 117.2,224.0 117.6,222.2 112.6,218.5 118.2,217.5 119.0,215.4 108.0,216.0 108.0,211.8 102.8,212.0 102.4,209.7 114.5,207.9 115.9,205.8 122.7,203.1 124.4,197.2 128.3,196.0 133.8,197.1 134.5,200.7 138.8,202.4 139.0,201.2 145.5,200.6 145.8,199.3 150.9,198.0 153.1,205.0 154.6,207.0 156.1,205.6 157.9,208.8 159.8,209.2 162.5,208.2 162.8,205.1 167.5,207.0 168.7,202.5Z M89.5,235.5 89.6,237.3 87.1,239.2 86.2,238.0 89.5,235.5Z"/>
+            <path class="sido pw-high" data-sido="전남" d="M165.1,258.5 167.7,267.4 177.6,280.0 168.8,289.7 165.9,287.3 167.3,289.2 165.8,290.5 169.0,293.8 176.8,291.6 175.3,300.8 172.6,301.9 169.9,299.3 167.9,303.3 168.8,307.4 164.7,307.6 163.5,304.2 165.9,299.2 160.7,290.5 154.6,294.2 153.0,300.4 159.2,305.5 160.9,311.4 154.2,312.2 156.6,314.3 150.4,320.1 150.9,322.2 146.1,316.8 137.5,314.7 141.1,308.8 144.3,307.6 145.7,302.7 147.4,302.0 147.4,305.4 149.5,306.0 150.1,299.6 146.4,301.1 145.0,298.4 141.5,304.0 138.4,303.2 130.5,309.7 130.1,315.2 128.4,315.9 129.4,319.1 127.1,322.0 123.5,321.4 124.1,323.4 118.4,320.6 117.3,310.6 114.7,322.2 108.2,325.4 107.3,331.1 102.2,333.0 102.3,328.4 100.0,328.6 102.1,324.5 98.7,321.9 98.8,315.8 90.1,313.3 86.6,306.1 89.3,298.8 93.8,309.5 97.3,311.5 91.9,304.4 94.0,298.5 98.1,297.3 92.9,296.7 95.6,292.2 94.9,284.1 91.8,287.6 89.0,283.9 92.8,282.3 94.1,277.8 92.3,278.4 90.9,274.8 89.3,277.8 86.9,277.4 86.7,280.4 84.7,277.0 81.0,276.4 81.4,273.6 85.3,274.0 86.7,270.8 91.9,270.2 91.4,274.5 95.0,275.6 95.2,278.9 97.7,277.2 98.8,274.5 91.7,267.1 89.7,268.2 89.1,264.5 90.7,260.1 93.9,258.8 96.5,249.7 99.9,250.0 103.0,258.6 113.0,255.5 115.9,248.1 120.5,245.4 126.8,252.2 132.9,247.0 132.6,252.6 135.0,254.3 133.6,257.8 137.7,259.2 144.0,256.5 153.7,258.9 158.8,254.3 165.1,258.5Z M86.4,311.6 94.2,317.8 93.2,322.4 87.1,327.1 79.5,328.5 76.8,324.2 86.6,315.5 86.4,311.6Z M112.1,325.4 114.9,327.3 116.6,333.5 112.7,333.5 110.0,330.4 109.4,326.9 112.1,325.4Z M76.3,297.6 83.1,302.0 78.6,304.7 75.5,302.2 76.3,297.6Z M175.3,300.9 177.8,303.3 177.5,311.9 173.0,309.1 175.8,304.2 175.3,300.9Z M81.1,270.7 78.5,276.8 74.3,276.8 74.3,273.7 81.1,270.7Z"/>
+            <path class="sido pw-low" data-sido="광주" d="M125.3,262.2 126.7,262.8 129.4,267.5 130.9,267.5 132.1,269.0 130.1,274.4 128.0,275.9 126.2,274.6 122.3,275.5 120.1,277.4 117.7,277.4 115.4,273.4 111.7,273.5 110.1,272.4 110.3,269.2 111.3,268.8 110.6,267.2 112.2,265.4 114.1,265.7 115.2,262.7 116.8,262.6 116.3,264.0 119.3,265.2 125.3,262.2Z"/>
+            <path class="sido pw-high" data-sido="경북" d="M276.3,233.3 270.6,231.2 267.5,233.5 265.0,233.1 264.6,229.6 261.9,228.1 258.2,227.9 253.7,231.1 254.0,234.1 252.4,233.4 248.5,236.5 244.3,234.3 240.9,237.3 237.7,237.9 236.9,239.6 229.3,237.2 224.9,238.1 222.0,235.3 221.4,231.0 222.5,228.3 224.6,226.8 226.8,227.0 227.2,229.4 230.8,228.1 231.5,225.4 230.7,223.1 232.7,221.9 232.3,220.4 235.5,216.1 234.0,212.9 234.5,209.7 233.3,207.2 231.2,206.5 226.8,207.1 223.2,209.7 221.5,209.4 221.9,212.0 219.4,215.2 217.9,214.5 218.4,212.3 215.0,213.4 213.3,218.6 218.5,220.3 218.0,221.7 215.1,221.6 213.1,225.0 215.9,227.8 215.9,229.5 215.0,230.2 211.0,229.5 214.1,234.0 213.1,236.2 212.2,236.2 211.3,233.9 208.4,233.0 205.7,233.9 204.7,233.0 204.2,234.1 199.9,233.1 199.9,231.7 202.2,230.8 202.2,228.0 199.2,223.3 197.8,223.1 197.6,220.7 194.4,219.3 190.9,220.2 189.3,218.1 186.2,218.2 185.2,215.6 183.4,215.5 183.2,212.9 184.8,211.9 182.9,205.9 187.9,202.5 188.2,198.9 189.9,196.3 188.7,193.7 189.4,192.8 193.3,192.8 192.0,189.9 193.0,188.7 190.8,187.5 188.3,189.1 183.8,186.0 183.1,187.3 181.4,187.2 180.8,184.7 183.7,181.2 182.7,175.3 183.1,172.1 184.7,170.1 182.0,165.7 179.7,165.5 178.2,164.0 181.3,162.4 181.2,160.9 182.7,159.3 183.6,161.2 186.1,162.0 186.2,158.5 183.5,156.6 186.1,156.5 187.9,153.2 189.4,154.7 191.5,154.1 194.4,155.4 192.1,152.5 193.7,147.4 196.5,148.2 198.5,146.1 203.2,147.5 202.9,145.0 204.1,145.1 204.6,143.2 207.0,144.4 209.3,147.5 212.0,148.6 212.9,147.6 215.2,147.8 216.9,145.0 215.4,143.0 216.4,139.2 220.7,134.8 222.5,134.4 224.9,130.6 227.6,131.0 228.9,129.0 234.8,131.7 234.8,129.6 236.8,127.4 239.3,128.1 240.5,130.0 243.4,130.5 244.9,127.1 253.4,128.9 255.2,126.4 261.1,130.8 263.4,130.6 262.9,128.4 265.7,125.2 271.2,123.1 272.1,126.5 274.9,129.1 273.9,132.1 274.2,142.1 278.0,150.9 277.8,156.1 275.5,158.2 274.0,161.7 276.1,170.5 275.5,176.0 272.1,183.0 271.8,186.3 271.9,193.6 273.3,195.4 273.2,197.6 275.7,200.2 271.9,203.9 272.4,205.4 276.4,208.2 279.4,205.7 282.0,201.3 283.4,201.9 284.2,206.1 280.4,212.9 280.9,217.6 278.7,223.3 277.8,230.7 276.3,233.3Z"/>
+            <path class="sido pw-low" data-sido="대구" d="M221.4,231.0 220.4,231.6 220.2,234.2 216.7,234.2 212.2,236.2 214.1,234.0 211.0,229.5 215.0,230.2 215.9,229.5 215.9,227.8 213.1,225.0 215.1,221.6 218.0,221.7 218.5,220.3 213.3,218.6 215.0,213.4 218.4,212.3 217.9,214.5 219.4,215.2 221.9,212.0 221.5,209.4 225.2,209.1 226.8,207.1 233.3,207.2 235.5,216.1 232.3,220.4 232.7,221.9 230.7,223.1 231.3,227.3 227.2,229.4 226.8,227.0 224.6,226.8 222.5,228.3 221.4,231.0Z"/>
+            <path class="sido pw-high" data-sido="경남" d="M212.2,236.2 220.2,234.2 221.4,231.0 222.0,235.3 226.2,238.5 229.3,237.2 236.9,239.6 244.3,234.3 248.5,236.5 249.8,235.6 250.7,238.2 247.8,240.0 249.2,242.3 255.9,244.8 257.9,248.2 261.2,248.9 262.6,251.1 261.0,254.7 258.4,254.5 256.2,258.5 250.3,261.2 249.4,264.0 242.7,265.5 241.6,269.0 237.3,269.7 240.2,273.4 237.8,274.7 231.9,273.6 231.1,270.3 229.5,271.7 226.6,270.6 225.0,265.8 223.7,267.7 228.0,276.3 224.5,277.5 221.9,273.0 212.8,277.7 213.3,278.7 216.6,277.5 216.8,276.1 218.9,276.6 218.2,278.3 220.0,280.2 216.3,281.8 215.2,289.1 215.8,290.3 217.0,287.5 218.0,289.6 215.3,293.6 216.1,297.6 214.3,298.8 212.7,294.9 210.3,293.9 212.5,294.1 213.6,291.4 207.9,288.5 211.3,288.0 210.0,285.4 207.0,288.4 204.5,285.4 201.8,286.0 202.2,289.1 197.4,288.3 192.0,284.5 193.3,282.9 191.7,278.8 191.1,281.9 189.2,282.9 187.1,283.0 185.9,280.3 184.5,284.4 177.4,285.7 176.5,277.6 167.7,267.4 165.1,258.5 167.7,256.8 167.1,254.3 170.1,250.6 170.4,248.3 168.6,247.2 169.6,245.5 165.7,239.6 168.1,235.7 170.1,225.4 175.1,219.1 180.8,217.4 183.5,213.9 186.2,218.2 197.6,220.7 197.8,223.1 202.2,228.0 202.2,230.8 199.9,231.7 199.9,233.1 204.2,234.1 208.4,233.0 211.3,233.9 212.2,236.2Z"/>
+            <path class="sido pw-mid" data-sido="울산" d="M276.3,233.3 275.7,234.8 277.2,238.1 275.6,245.5 272.4,246.3 270.3,248.3 271.2,248.7 270.1,253.5 270.9,255.1 267.6,257.0 266.2,256.1 265.3,252.8 261.6,252.7 262.6,251.1 261.2,248.9 259.1,249.2 255.9,244.8 249.2,242.3 247.8,240.0 250.7,238.2 250.8,236.0 249.8,235.6 252.4,233.4 254.0,234.1 253.7,231.1 254.8,229.5 258.2,227.9 261.9,228.1 264.6,229.6 265.0,233.1 267.5,233.5 270.6,231.2 276.3,233.3Z"/>
+            <path class="sido pw-high" data-sido="부산" d="M267.6,257.0 265.3,257.8 262.9,267.6 261.1,269.4 257.7,270.0 256.8,273.9 252.5,272.2 252.0,273.3 255.3,276.9 254.5,277.6 251.6,275.0 250.9,276.7 247.6,278.8 246.6,275.5 239.7,275.4 240.6,278.8 239.8,280.4 238.0,279.8 237.5,277.3 238.9,276.8 239.0,274.0 240.2,273.4 237.3,269.7 241.6,269.0 242.7,265.5 249.4,264.0 250.3,261.2 256.2,258.5 258.4,254.5 259.9,255.4 261.6,252.7 265.3,252.8 266.2,256.1 267.6,257.0Z"/>
+            <path class="sido pw-mid" data-sido="제주" d="M58.9,326.2 61.7,326.8 63.5,329.2 66.2,329.3 66.7,333.2 68.4,334.0 66.4,339.2 64.4,340.7 62.2,345.3 58.8,345.4 56.8,347.6 51.7,348.1 48.1,350.7 43.5,350.3 40.5,351.7 37.1,350.1 35.4,351.0 31.6,350.5 28.7,353.8 23.4,349.0 22.0,346.5 22.5,342.5 30.9,333.7 41.9,329.6 50.1,328.4 50.8,327.0 58.9,326.2Z M69.3,329.3 70.0,332.0 68.4,330.9 69.3,329.3Z"/>
+          </g>
+          <text class="sido-lbl" x="118" y="98" text-anchor="middle">경기</text>
+          <text class="sido-lbl" x="200" y="72" text-anchor="middle">강원</text>
+          <text class="sido-lbl" x="118" y="165" text-anchor="middle">충남</text>
+          <text class="sido-lbl" x="170" y="150" text-anchor="middle">충북</text>
+          <text class="sido-lbl" x="235" y="180" text-anchor="middle">경북</text>
+          <text class="sido-lbl" x="150" y="215" text-anchor="middle">전북</text>
+          <text class="sido-lbl" x="150" y="290" text-anchor="middle">전남</text>
+          <text class="sido-lbl" x="215" y="255" text-anchor="middle">경남</text>
+          <text class="sido-lbl" x="46" y="352" text-anchor="middle">제주</text>
+          <!-- ── 도시 단위 AIDC 버블 (status색 / r=capacity_mw / null=점선) — cx/cy는 JSON map_xy와 동일 ── -->
+          <circle cx="128" cy="104" r="11" fill="none" stroke="#228738" stroke-width="1" stroke-dasharray="2 2" opacity=".55"/>
+          <circle class="region-bubble nullcap" cx="128" cy="104" r="7" fill="#228738"/>
+          <text class="mlbl" x="118" y="95" text-anchor="end">수도권 <tspan class="mw">집적</tspan></text>
+          <circle class="region-bubble nullcap" cx="174" cy="69" r="7" fill="#6D7882"/>
+          <text class="mlbl" x="184" y="70" text-anchor="start">강원·춘천 <tspan class="mw">후보</tspan></text>
+          <circle class="region-bubble" cx="148" cy="172" r="12.5" fill="#228738"/>
+          <text class="mlbl" x="163.5" y="170" text-anchor="start">세종(충청) <tspan class="mw">270MW</tspan></text>
+          <circle class="region-bubble nullcap" cx="113" cy="210" r="7" fill="#256EF4"/>
+          <text class="mlbl" x="103" y="211" text-anchor="end">군산·새만금 <tspan class="mw">MW 미명시</tspan></text>
+          <circle class="region-bubble nullcap" cx="122" cy="269" r="7" fill="#228738"/>
+          <text class="mlbl" x="112" y="270" text-anchor="end">광주 <tspan class="mw">88.5PF</tspan></text>
+          <circle class="region-bubble" cx="268" cy="241" r="17.5" fill="#FFB114"/>
+          <text class="mlbl" x="268" y="244" text-anchor="middle" fill="#1E2124">울산</text>
+          <text class="mlbl" x="268" y="266" text-anchor="middle"><tspan class="mw">1,000MW</tspan></text>
+          <circle class="region-bubble" cx="271" cy="206" r="12.8" fill="#FFB114"/>
+          <text class="mlbl" x="271" y="188" text-anchor="middle">포항 <tspan class="mw">300MW</tspan></text>
+          <circle class="region-bubble" cx="210" cy="199" r="19.0" fill="#256EF4"/>
+          <text class="mlbl" x="210" y="202" text-anchor="middle" fill="#fff">구미</text>
+          <text class="mlbl" x="210" y="226" text-anchor="middle"><tspan class="mw">1,300MW</tspan></text>
+          <circle class="region-bubble" cx="107" cy="313" r="10.0" fill="#256EF4"/>
+          <text class="mlbl" x="120.0" y="315" text-anchor="start">해남 <tspan class="mw">80MW</tspan></text>
+        </svg>
+      </div>
+
+      <div class="map-side">
+        <div class="pw-legend">
+          <span class="legend-group-lbl">면 = 전력 여유수준</span>
+          <div class="li"><span class="sw pw-high" style="background:rgba(34,135,56,.14)"></span>여유</div>
+          <div class="li"><span class="sw pw-mid" style="background:rgba(255,177,20,.18)"></span>보통</div>
+          <div class="li"><span class="sw pw-low" style="background:rgba(222,52,18,.12)"></span>부족</div>
+        </div>
+        <div class="map-legend">
+          <span class="legend-group-lbl">점 = 데이터센터</span>
+          <div class="li"><span class="dot" style="background:#228738"></span>운영</div>
+          <div class="li"><span class="dot" style="background:#FFB114"></span>구축</div>
+          <div class="li"><span class="dot" style="background:#256EF4"></span>계획</div>
+          <div class="li"><span class="dot cand"></span>후보/미공개(점선)</div>
+        </div>
+        <div class="foot-src" style="margin:-2px 0 10px;">면 = 전력자급률 음영 · 버블 = AI 데이터센터</div>
+        <div class="rgrid">
+          <div class="rg-item op">
+            <div class="rg-top"><span class="rg-name">수도권</span> <span class="rg-stat op">운영</span> <span class="pw-chip low">⚡전력 부족·계통병목</span></div>
+            <div class="rg-cap aux2">집적(합산 불가)</div>
+            <div class="rg-fac">삼성SDS 동탄 40MW(대표) · 전국 DC 60.4% 집적. 신규 신청량(20GW급)은 가동분 아님 — 합산 금지</div>
+          </div>
+          <div class="rg-item op">
+            <div class="rg-top"><span class="rg-name">충청권</span> <span class="rg-stat op">운영</span> <span class="pw-chip mid">⚡전력 보통</span></div>
+            <div class="rg-cap">270 MW</div>
+            <div class="rg-fac">네이버 '각 세종'(대표·운영). 네이버-엔비디아 GW급 AI팩토리 단계 55→100→200MW(2026-06 발표)</div>
+          </div>
+          <div class="rg-item const">
+            <div class="rg-top"><span class="rg-name">포항</span> <span class="rg-stat const">구축</span> <span class="pw-chip high">⚡전력 여유</span></div>
+            <div class="rg-cap">300 MW</div>
+            <div class="rg-fac">AI 팩토리 포항(1단계 40MW·2027-09 상업운전). 국내 첫 GPU 전용 DC</div>
+          </div>
+          <div class="rg-item const">
+            <div class="rg-top"><span class="rg-name">울산</span> <span class="rg-stat const">구축</span> <span class="pw-chip mid">⚡전력 보통</span></div>
+            <div class="rg-cap">1,000 MW</div>
+            <div class="rg-fac">SK·AWS(40→103→1,000MW). 총 7조원·GPU 6만 장. 비수도권 최대 목표</div>
+          </div>
+          <div class="rg-item plan">
+            <div class="rg-top"><span class="rg-name">구미</span> <span class="rg-stat plan">계획</span> <span class="pw-chip high">⚡전력 여유(경북)</span></div>
+            <div class="rg-cap">1,300 MW</div>
+            <div class="rg-fac">퀀텀일레븐 클러스터(대표값). [별개] 삼성SDS 하이퍼스케일 60MW — 합산 금지</div>
+          </div>
+          <div class="rg-item plan">
+            <div class="rg-top"><span class="rg-name">해남(전남 솔라시도)</span> <span class="rg-stat plan">계획</span> <span class="pw-chip high">⚡전력 여유·RE100</span></div>
+            <div class="rg-cap">80 MW</div>
+            <div class="rg-fac">국가 AI컴퓨팅센터 40→80MW(대표값). [별개] 솔라시도 파크 전체 1GW — 합산 금지</div>
+          </div>
+          <div class="rg-item plan">
+            <div class="rg-top"><span class="rg-name">전북(새만금)</span> <span class="rg-stat plan">계획</span> <span class="pw-chip mid">⚡전력 보통·새만금태양광</span></div>
+            <div class="rg-cap aux2">DC MW 미명시</div>
+            <div class="rg-fac">현대차 새만금 DC(5.8조·GPU 5만장급). [혼용 금지] 200MW=수전해·GW급=태양광(DC 아님)</div>
+          </div>
+          <div class="rg-item op">
+            <div class="rg-top"><span class="rg-name">광주</span> <span class="rg-stat op">운영</span> <span class="pw-chip low">⚡전력 부족(불일치)</span></div>
+            <div class="rg-cap aux2">88.5PF (MW 미공개)</div>
+            <div class="rg-fac">국가 AI데이터센터(NHN클라우드). 107PB·H100 60PF+NPU 11PF. 비수도권 유일 운영</div>
+          </div>
+          <div class="rg-item cand">
+            <div class="rg-top"><span class="rg-name">강원</span> <span class="rg-stat cand">후보(미확정)</span> <span class="pw-chip high">⚡전력 여유 213%</span></div>
+            <div class="rg-cap aux2">미확정 (전 필드 null)</div>
+            <div class="rg-fac">전력자급률 213%(전국 2위)로 후보 거론. 네이버 춘천 액침냉각 검증. K-AI 시티는 DC 미포함</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot-src" style="margin-top:12px; border-top:1px solid var(--krds-border); padding-top:9px;">
+      면 = 지역별 <b>전력자급률</b>(발전량÷소비량, %) · 버블 = <b>AI 데이터센터</b>(전력용량 MW, 색상=운영/구축/계획). 전력자급률은 송변전 <b>계통 접속 여유와는 다른 지표</b>입니다(예: 인천은 자급률이 높아도 수도권 계통 제약으로 신규 접속이 제한). 전력 출처: 에너지경제연구원 지역에너지통계연보(2023년 기준, 일부 2025년 한전 자료 반영) · 전력거래소. 지도 © KOSTAT·POPONG (CC BY 4.0).
+    </div>
+  </section>
+  </div><!-- /클러스터 🏗 AI 인프라 -->
+
+  <!-- ═══ 클러스터: 💹 시장·지식재산 ═══ -->
+  <div class="cluster">
+  <div class="cluster-head"><span class="ch-ico">💹</span> 시장·지식재산 <span class="ch-sub">소버린 AI ETF · AI 특허</span></div>
+
+  <!-- ═══ 소버린 AI ETF (전폭, aux) ═══ -->
+  <section class="card" style="margin-bottom:16px">
+    <h2>소버린 AI ETF 주간 동향 <span class="subt">국내 상장 · 2026-06-15~22</span></h2>
+    <div class="aux">⚠ 보조지표 — 참고용(시장 데이터). 정책 증빙 미합산.</div>
+    <div class="headline">두 ETF <span class="hl-key">동반 하락</span> · 1Q ▼8.67%</div>
+    <div class="etf-pair">
+      <div class="etf-box">
+        <div class="ename">KODEX 코리아소버린AI</div>
+        <div class="etick">0115E0 · 삼성자산운용 · KRX 코리아 소버린 AI 지수 · 상장 2025-10-21</div>
+        <div class="etop">
+          <div class="eprice"><div class="plbl">종가</div><div class="pval">16,165<span class="u"> 원</span></div></div>
+          <div class="echg"><div class="clbl">주간 등락</div><div class="cval">▼3.58%</div><div class="cwin">16,765 → 16,165원</div></div>
+        </div>
+        <div class="ecaph">구성종목 상위 5 (비중) — 개별 종가 미수집(추정 금지)</div>
+        <div class="cbar-row"><span class="cname">NAVER</span><div class="cbar-track"><div class="cbar-fill" style="width:100.0%"></div></div><span class="cwt">18.14%</span></div>
+        <div class="cbar-row"><span class="cname">SK텔레콤</span><div class="cbar-track"><div class="cbar-fill" style="width:45.0%"></div></div><span class="cwt">8.17%</span></div>
+        <div class="cbar-row"><span class="cname">LG씨엔에스</span><div class="cbar-track"><div class="cbar-fill" style="width:34.0%"></div></div><span class="cwt">6.16%</span></div>
+        <div class="cbar-row"><span class="cname">NHN</span><div class="cbar-track"><div class="cbar-fill" style="width:31.1%"></div></div><span class="cwt">5.64%</span></div>
+        <div class="cbar-row"><span class="cname">한미반도체</span><div class="cbar-track"><div class="cbar-fill" style="width:27.5%"></div></div><span class="cwt">4.98%</span></div>
+        <div class="ecapn">전체 30종목 · 비중 기준일 2026-06-11 · 막대=1위 비중 상대폭.</div>
+      </div>
+      <div class="etf-box">
+        <div class="ename">1Q K소버린AI</div>
+        <div class="etick">0103T0 · 하나자산운용 · iSelect K소버린AI 지수 · 상장 2025-09-30</div>
+        <div class="etop">
+          <div class="eprice"><div class="plbl">종가</div><div class="pval">9,220<span class="u"> 원</span></div></div>
+          <div class="echg"><div class="clbl">주간 등락</div><div class="cval">▼8.67%</div><div class="cwin">10,095 → 9,220원</div></div>
+        </div>
+        <div class="ecaph">구성종목 상위 5 (비중) — 개별 종가 미수집(추정 금지)</div>
+        <div class="cbar-row"><span class="cname">카카오</span><div class="cbar-track"><div class="cbar-fill" style="width:100.0%"></div></div><span class="cwt">27.86%</span></div>
+        <div class="cbar-row"><span class="cname">NAVER</span><div class="cbar-track"><div class="cbar-fill" style="width:91.1%"></div></div><span class="cwt">25.37%</span></div>
+        <div class="cbar-row"><span class="cname">삼성SDS</span><div class="cbar-track"><div class="cbar-fill" style="width:46.5%"></div></div><span class="cwt">12.95%</span></div>
+        <div class="cbar-row"><span class="cname">LG씨엔에스</span><div class="cbar-track"><div class="cbar-fill" style="width:21.2%"></div></div><span class="cwt">5.91%</span></div>
+        <div class="cbar-row"><span class="cname">현대오토에버</span><div class="cbar-track"><div class="cbar-fill" style="width:19.3%"></div></div><span class="cwt">5.37%</span></div>
+        <div class="ecapn">전체 20종목 · 카카오·NAVER 합 53.2% · 비중 기준일 2026-06-11.</div>
+      </div>
+    </div>
+    <div class="foot-src">주간 등락=양끝 종가 기준 · 구성종목 개별 종가 추정 금지로 생략. <span class="badge b">B</span> Investing.com <a class="src" href="https://kr.investing.com/etfs/0115e0-seoul-historical-data" target="_blank" rel="noopener">원문↗</a></div>
+  </section>
+
+  <!-- ═══ AI 특허 동향 (분기, 전폭) ═══ -->
+  <section class="card" style="margin-bottom:16px">
+      <h2>AI 특허 동향 <span class="subt">분기/연 갱신 · 비교쌍 · 추이 · 참고치 · 다음 공시: 차기 WIPO/IFI·KIPRIS 발표 시</span></h2>
+      <div class="headline">생성형 AI 특허 <span class="hl-key">한국 세계 3위</span> (WIPO 2014~2023 누계)</div>
+      <div class="pat-tier">
+        <div class="tier-label">① 생성형 AI — 글로벌 vs 국내 <span class="badge b">B</span> <span class="muted" style="font-weight:400">동일 기준·기간(WIPO 2014~2023)</span></div>
+        <div class="pat-pair">
+          <div class="pat-box">
+            <div class="plabel">글로벌</div>
+            <div class="pbig">54,000<span class="u"> 건</span></div>
+            <span class="ptag">WIPO 생성형 AI · 누계</span>
+          </div>
+          <div class="pat-box kr">
+            <div class="plabel">국내 (한국)</div>
+            <div class="pbig">4,155<span class="u"> 건</span></div>
+            <span class="rankbadge">세계 3위</span>
+          </div>
+        </div>
+        <div class="foot-src">중국 38,210(1) · 미국 6,276(2) · 한국 4,155(3) · 일본 3,409(4) · 인도 1,350(5). 동일 기준이라 비교 일관성 우수.</div>
+      </div>
+      <div class="pat-tier">
+        <div class="tier-label">② 국내 출원 추이 <span class="muted" style="font-weight:400">특허청 Z01A(전체 AI)</span></div>
+        <div class="pat-trend">
+          <div class="endpoint"><div class="yr">2012년</div><div class="v">384<span class="u"> 건</span></div></div>
+          <div class="arrowcol"><span class="glyph">▶</span><span class="cagr">▲ CAGR +41%</span></div>
+          <div class="endpoint"><div class="yr">2021년</div><div class="v">8,416<span class="u"> 건</span></div></div>
+          <span class="span-note">확보 2개 연도뿐 — 보간 안 함</span>
+        </div>
+      </div>
+      <div class="pat-tier" style="margin-bottom:6px">
+        <div class="tier-label">③ 참고치 <span class="muted" style="font-weight:400">기준·기간 상이 → 비교쌍과 분리</span></div>
+        <div class="pat-ref">
+          <span class="muted" style="font-weight:700">전체 AI 글로벌 출원(IFI 2024)</span>
+          <span class="refbig"> 160,649<span class="u"> 건</span></span>
+          <span class="refsep">기준 상이 · 직접 비교 불가</span>
+        </div>
+      </div>
+      <div class="foot-src" style="border-top:1px solid var(--krds-border); padding-top:8px;">⚠ <b>기준 혼용 금지</b>(WIPO 생성형≠Z01A 전체 AI≠IFI 연간). 월/연 단위 갱신 — 직전 확정값 이월. <span class="badge b">B</span> <a class="src" href="https://www.wipo.int/web-publications/patent-landscape-report-generative-artificial-intelligence-genai/assets/62504/Generative%20AI%20-%20PLR%20EN_WEB2.pdf" target="_blank" rel="noopener">원문↗</a></div>
+    </section>
+  </div><!-- /클러스터 💹 시장·지식재산 -->
+
+  <!-- ═══ 클러스터: 📰 산업별 AI 소식 ═══ -->
+  <div class="cluster">
+  <div class="cluster-head"><span class="ch-ico">📰</span> 산업별 AI 소식 <span class="ch-sub">제조·공공·교육·의료·안전·인프라·투자 7섹터 국내외 소식</span></div>
+
+  <!-- ═══ 뉴스 그리드 (7개 고정 섹터 — KRDS 표 톤) ═══ -->
+  <section class="card" style="margin-bottom:16px">
+    <h2>산업별 국내외 AI 소식 <span class="subt">7개 고정 섹터</span></h2>
+    <div class="row cols4" style="margin-bottom:14px">
+      <div class="news-card">
+        <h2>제조 <span class="cnt">3</span></h2>
+        <table class="news-table"><caption class="muted" style="display:none">제조 섹터 뉴스</caption><tbody>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip kr">국내</span> <span class="chip">투자</span></div>
+            <div class="t">정부 AX스프린트, AI 응용제품 229개 선정·7,540억 지원</div>
+            <div class="news-foot"><span class="muted">06-19</span> <span class="badge b">B</span> <a class="src" href="https://www.newspim.com/news/view/20260619000821" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">투자</span></div>
+            <div class="t">엔비디아-코히런트, 텍사스 AI소재 공장 20억달러 투자</div>
+            <div class="news-foot"><span class="muted">06-16</span> <span class="badge b">B</span> <a class="src" href="https://abcnews.com/Technology/wireStory/nvidias-huang-pledges-ai-boost-manufacturing-jobs-test-133921258" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">발표</span></div>
+            <div class="t">산업자동화 전시 'Automate 2026' 시카고 개막</div>
+            <div class="news-foot"><span class="muted">06-15</span> <span class="badge b">B</span> <a class="src" href="https://www.manufacturingtomorrow.com/story/2026/06/a3s-automate-2026-opens-next-week-in-chicago/27760/" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+        </tbody></table>
+      </div>
+      <div class="news-card">
+        <h2>공공 <span class="cnt">1</span></h2>
+        <table class="news-table"><tbody>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip kr">국내</span> <span class="chip">도입</span></div>
+            <div class="t">공공부문 AI 12개 마중물 과제 6월 착수</div>
+            <div class="news-foot"><span class="muted">06-15</span> <span class="badge b">B</span> <a class="src" href="https://www.etnews.com/20260615000257" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+        </tbody></table>
+      </div>
+      <div class="news-card">
+        <h2>교육 <span class="cnt">2</span></h2>
+        <table class="news-table"><tbody>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip kr">국내</span> <span class="chip">도입</span></div>
+            <div class="t">대교협, 하반기 교수·교직원 생성형AI 연수 21개 개설</div>
+            <div class="news-foot"><span class="muted">06-15</span> <span class="badge b">B</span> <a class="src" href="https://www.fnnews.com/news/202606151342502325" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">정책</span></div>
+            <div class="t">EU·OECD, 초·중등용 AI 리터러시 프레임워크 발표</div>
+            <div class="news-foot"><span class="muted">06-18</span> <span class="badge a">A</span> <a class="src" href="https://education.ec.europa.eu/node/3537" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+        </tbody></table>
+      </div>
+      <div class="news-card">
+        <h2>의료 <span class="cnt">2</span></h2>
+        <table class="news-table"><tbody>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip kr">국내</span> <span class="chip">도입</span></div>
+            <div class="t">10개 국립대병원-심평원, 공공의료 AI 전환 협약</div>
+            <div class="news-foot"><span class="muted">06-15</span> <span class="badge b">B</span> <a class="src" href="https://kormedi.com/2825062/" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">규제</span></div>
+            <div class="t">英 MHRA, 의료AI 'AI 에어록' 2단계·규제샌드박스 가동</div>
+            <div class="news-foot"><span class="muted">06-19</span> <span class="badge b">B</span> <a class="src" href="https://www.burges-salmon.com/articles/102n4qs/what-future-uk-regulation-of-ai-in-healthcare-looks-like-now/" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <div class="row cols4" style="margin-bottom:0">
+      <div class="news-card">
+        <h2>안전 <span class="cnt">2</span></h2>
+        <table class="news-table"><tbody>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">규제</span></div>
+            <div class="t">EU 의회, AI법 개정 가결…'누디파이어' 딥페이크 금지</div>
+            <div class="news-foot"><span class="muted">06-16</span> <span class="badge b">B</span> <a class="src" href="https://sofiaglobe.com/2026/06/16/european-parliament-approves-ai-act-amendments-nudifier-ban/" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">정책</span></div>
+            <div class="t">G7 에비앙 정상회의, AI 안전 자율서약 채택(비구속)</div>
+            <div class="news-foot"><span class="muted">06-21</span> <span class="badge c">C</span> <a class="src" href="https://asanify.com/blog/news/g7-ai-safety-commitments-june-21-2026/" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+        </tbody></table>
+      </div>
+      <div class="news-card">
+        <h2>인프라 <span class="cnt">2</span></h2>
+        <table class="news-table"><tbody>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip kr">국내</span> <span class="chip">투자</span></div>
+            <div class="t">SK그룹, 美 캘리포니아 AI 데이터센터 자체구축 검토</div>
+            <div class="news-foot"><span class="muted">06-16</span> <span class="badge b">B</span> <a class="src" href="https://zdnet.co.kr/view/?no=20260615155152" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">투자</span></div>
+            <div class="t">Circe Energy, 美 AI캠퍼스에 커민스 2GW 발전설비 발주</div>
+            <div class="news-foot"><span class="muted">06-19</span> <span class="badge b">B</span> <a class="src" href="https://www.sahmcapital.com/news/content/cummins-cmi-is-up-93-after-2-gw-ai-data-center-power-deal-with-circe-energy-2026-06-19" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+        </tbody></table>
+      </div>
+      <div class="news-card">
+        <h2>투자 <span class="cnt">3</span></h2>
+        <table class="news-table"><tbody>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">투자</span></div>
+            <div class="t">월드모델 AI 오디세이, 3.1억달러 시리즈B 유치</div>
+            <div class="news-foot"><span class="muted">06-18</span> <span class="badge a">A</span> <a class="src" href="https://news.crunchbase.com/venture/biggest-funding-rounds-cybersecurity-defense-startup-ai-odyssey-leads/" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip gl">해외</span> <span class="chip">투자</span></div>
+            <div class="t">AI 보안 스타트업 엔트(Ent.AI), 1억달러 시드 유치</div>
+            <div class="news-foot"><span class="muted">06-18</span> <span class="badge a">A</span> <a class="src" href="https://news.crunchbase.com/venture/biggest-funding-rounds-cybersecurity-defense-startup-ai-odyssey-leads/" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+          <tr><td>
+            <div class="news-item-tags"><span class="chip kr">국내</span> <span class="chip">투자</span></div>
+            <div class="t">백오피스 자동화 AI '아크로', 美 사제파트너스 프리시드</div>
+            <div class="news-foot"><span class="muted">06-19</span> <span class="badge b">B</span> <a class="src" href="https://startuprecipe.co.kr/archives/5822236" target="_blank" rel="noopener">원문↗</a></div>
+          </td></tr>
+        </tbody></table>
+      </div>
+      <div class="news-card">
+        <h2>안보·국방 <span class="cnt">0</span></h2>
+        <div class="news-empty">기간 내 검증된 소식 없음</div>
+      </div>
+    </div>
+  </section>
+  </div><!-- /클러스터 📰 산업별 AI 소식 -->
+
+  <!-- ═══════════════ 그룹 ② 참고 지표 — KRDS 탭 ═══════════════ -->
+  <nav class="krds-tabs" role="tablist" aria-label="지표 그룹" id="sec-ref">
+    <span class="krds-tab active" role="tab" aria-selected="true">참고 지표<span class="tsub">연간·이벤트성 · 저빈도/고정 — 대개 직전 값 유지(카드 우상단에 갱신 주기 명시)</span></span>
+  </nav>
+
+  <!-- ═══ 클러스터: 🌐 글로벌·경쟁 위치 ═══ -->
+  <div class="cluster">
+  <div class="cluster-head"><span class="ch-ico">🌐</span> 글로벌·경쟁 위치 <span class="ch-sub">한국 글로벌 AI 순위 · 국내 LLM 경쟁 위치</span></div>
+
+  <!-- ═══ 지수별 국제 순위 병기 (전폭, aux) ═══ -->
+  <section class="card" style="margin-bottom:16px">
+    <h2>한국 글로벌 AI 경쟁력 — 지수별 위치 <span class="subt">연간 갱신 · 단일 순위 환산 불가</span> <span class="cadence-chip">연 1회 · 다음 갱신: 차기 edition 발표 시</span></h2>
+    <div class="aux">⚠ 보조지표 — 지수별 산정방식·평가 국가수·발표 시점이 달라 단일 순위로 합산·환원 불가. 정책 증빙 미합산.</div>
+    <div class="headline">지수별 위치 — <span class="hl-key">Stanford HAI 4위 · Tortoise 6위 · Oxford 정부준비도 3위</span></div>
+    <div class="rank-trio">
+      <div class="rank-box">
+        <div class="rank-meta">Stanford HAI Vibrancy <span class="chip">2025</span></div>
+        <div class="rank-hero">
+          <span class="rh-num">4<span class="rh-suf">위</span></span>
+          <span class="rh-of">/ 36개국</span>
+          <span class="rh-chg up">▲3</span>
+        </div>
+        <div class="rank-score">점수 17.24 (1 미국 78.60 · 2 중국 36.95 · 3 인도 21.59)</div>
+        <div class="rank-top3">2024판 7위 → 2025판 4위. 인도가 한국·영국 추월(5 영국 16.64)</div>
+        <div class="rank-cap">36개국 / 42개 공개 지표 / 8개 pillar. 한국 강점: 정책·거버넌스·인프라·여론(개별 순위 미확정·추정 금지).</div>
+        <div class="foot-src"><span class="badge b">B</span> Stanford HAI · 2025-12 <a class="src" href="https://hai.stanford.edu/news/global-ai-power-rankings-stanford-hai-tool-ranks-36-countries-in-ai" target="_blank" rel="noopener">원문↗</a></div>
+      </div>
+      <div class="rank-box">
+        <div class="rank-meta">Tortoise Global AI Index <span class="chip">2024 (제5차)</span></div>
+        <div class="rank-hero">
+          <span class="rh-num">6<span class="rh-suf">위</span></span>
+          <span class="rh-of">/ 83개국</span>
+        </div>
+        <div class="rank-top3">1 미국 → 2 중국 → 3 싱가포르 → 4 영국 → 5 프랑스 → 6 한국</div>
+        <div class="rank-cap">122개 지표 / 24개 데이터원 / 83개국. 3 pillar(구현·혁신·투자). 최초(2022) 8위 → 2024 6위. 한국 정규화 점수 미공개(추정 금지).</div>
+        <div class="foot-src"><span class="badge b">B</span> Tortoise Media · 2024-09 <a class="src" href="https://www.tortoisemedia.com/2024/09/18/the-global-artificial-intelligence-index-2024" target="_blank" rel="noopener">원문↗</a></div>
+      </div>
+      <div class="rank-box">
+        <div class="rank-meta">Oxford 정부 AI 준비도 <span class="chip">2024</span></div>
+        <div class="rank-hero">
+          <span class="rh-num">3<span class="rh-suf">위</span></span>
+          <span class="rh-of">/ 188개국</span>
+        </div>
+        <div class="rank-score">점수 79.98 (2 싱가포르 84.25 · 1 미국 점수 미확인)</div>
+        <div class="rank-top3">정부 AI 도입·거버넌스 준비도. 동아시아 내 싱가포르 다음</div>
+        <div class="rank-cap">약 188개국 평가. 참고 지수로 병기(2025판 한국 순위 미확정 — 차기 재확인).</div>
+        <div class="foot-src"><span class="badge b">B</span> Oxford Insights · 2024-12 <a class="src" href="https://oxfordinsights.com/wp-content/uploads/2024/12/2024-Government-AI-Readiness-Index-2.pdf" target="_blank" rel="noopener">원문↗</a></div>
+      </div>
+    </div>
+    <div class="foot-src" style="margin-top:11px; border-top:1px solid var(--krds-border); padding-top:9px;">⚠ <b style="color:var(--krds-text)">지수별 산정방식·평가 국가수·발표 시점이 달라 단일 순위로 환산 불가</b> — '지수별 위치'로 표현. 본 주차 신규 edition 없음(이월).</div>
+  </section>
+
+  <!-- ═══ 국내 LLM 경쟁 위치 (전폭, aux) ═══ -->
+  <section class="card" id="llm-domestic" style="margin-bottom:16px">
+    <h2>국내 LLM 경쟁 위치 <span class="subt">측정 기준별 병기 · 단일 '점유율' 아님</span> <span class="cadence-chip">이벤트성</span></h2>
+    <div class="aux">⚠ 보조지표 — 측정 기준별 병기 구조. 단일 %로 합산하지 않음(B2B 중심 국산 모델이 0%로 왜곡 방지). 정책 증빙 미합산.</div>
+    <div style="font-size:14px; font-weight:700; color:var(--krds-text); margin:4px 0 8px;">① 국가 독자 AI 파운데이션 모델(독파모) 단계평가 트랙 <span class="muted" style="font-weight:700">— 다음 트리거: 2026-08초 단계평가</span></div>
+    <div class="timeline">
+      <div class="tl-step"><div class="tl-date">2025-08</div><div class="tl-txt"><b>5팀 선정</b><br>LG·네이버클라우드·NC AI·SKT·업스테이지</div></div>
+      <div class="tl-step"><div class="tl-date">2026-01-15</div><div class="tl-txt"><b>1차 평가</b><br>LG·SKT·업스테이지 진출 / 네이버클라우드·NC AI 탈락</div></div>
+      <div class="tl-step"><div class="tl-date">2026-02-20</div><div class="tl-txt"><b>추가공모</b><br>모티프 선정 · 트릴리온랩스 탈락 (현 4팀)</div></div>
+      <div class="tl-step cur"><div class="tl-date">2026-08초</div><div class="tl-txt"><b>단계평가</b><br>차기 갱신 트리거 구간</div></div>
+      <div class="tl-step"><div class="tl-date">2026 말</div><div class="tl-txt"><b>최종 2팀 확정</b><br>(2027 목표서 앞당김)</div></div>
+    </div>
+
+    <div class="roster-legend">
+      <div class="rl"><span class="dot pass"></span>2차 진출(현 정예팀)</div>
+      <div class="rl"><span class="dot fail"></span>1차 탈락</div>
+      <div class="rl"><span class="dot add"></span>추가공모 탈락</div>
+      <div class="rl"><span class="dot out"></span>트랙 외</div>
+    </div>
+
+    <div class="roster">
+      <div class="rcard pass">
+        <div class="rlogo" title="LG AI연구원"><span class="lchip"><span class="wm" style="color:#A50034">LG</span></span></div>
+        <div class="rco">LG AI연구원</div>
+        <div class="rmodel">K-엑사원(K-EXAONE)</div>
+        <span class="rparam">236B</span>
+        <span class="rstat pass">● 진출</span>
+        <div class="rnote">1차 평가 1위(90.2점). 한컴 제휴 챗엑사원 공공시장 진입(2026-05)</div>
+      </div>
+      <div class="rcard pass">
+        <div class="rlogo" title="SK텔레콤"><span class="lchip"><span class="wm sm"><span style="color:#EA002C">SK</span><span style="color:#231F20">telecom</span></span></span></div>
+        <div class="rco">SK텔레콤</div>
+        <div class="rmodel">A.X K1</div>
+        <span class="rparam">500B</span>
+        <span class="rstat pass">● 진출</span>
+        <div class="rnote">소비자 서비스 에이닷 운영</div>
+      </div>
+      <div class="rcard pass">
+        <div class="rlogo" title="업스테이지"><span class="lchip"><span class="wm lc" style="color:#7E6FFF">upstage</span></span></div>
+        <div class="rco">업스테이지</div>
+        <div class="rmodel">솔라(Solar Pro2 / Open 100B)</div>
+        <span class="rparam">100B급</span>
+        <span class="rstat pass">● 진출</span>
+        <div class="rnote">조달청 생성형 AI 1호 공급사 · 2026-04 국내 첫 생성형 AI 유니콘</div>
+      </div>
+      <div class="rcard add">
+        <div class="rlogo" title="모티프테크놀로지스"><span class="lchip"><span class="wm sm" style="color:#1E2124">Motif</span></span></div>
+        <div class="rco">모티프테크놀로지스</div>
+        <div class="rmodel">Motif (목표 300B급 추론형)</div>
+        <span class="rparam">목표 300B급</span>
+        <span class="rstat add">● 추가공모 선정</span>
+        <div class="rnote">2026-02-20 합류(현 정예팀). Motif-2-12.7B AAII 한국 1위</div>
+      </div>
+      <div class="rcard fail">
+        <div class="rlogo" title="네이버클라우드"><span class="lchip"><span class="wm sm"><span style="color:#03C75A">NAVER</span><span style="color:#1E2124">Cloud</span></span></span></div>
+        <div class="rco">네이버클라우드</div>
+        <div class="rmodel">HyperCLOVA X (SEEDThink 32B)</div>
+        <span class="rparam">32B(공개분)</span>
+        <span class="rstat fail">● 1차 탈락</span>
+        <div class="rnote">독자성 미충족(Qwen 2.5 코사인 유사도 99.51%) — 재도전 안 함</div>
+      </div>
+      <div class="rcard fail">
+        <div class="rlogo" title="NC AI"><span class="lchip"><span class="wm sm" style="color:#1E2124">NC&nbsp;AI</span></span></div>
+        <div class="rco">NC AI</div>
+        <div class="rmodel">배키(Varco)</div>
+        <span class="rparam">—</span>
+        <span class="rstat fail">● 1차 탈락</span>
+        <div class="rnote">초기 5팀 중 하나, 1차 평가 점수 미달 — 재도전 안 함</div>
+      </div>
+      <div class="rcard add">
+        <div class="rlogo" title="트릴리온랩스"><span class="lchip"><span class="wm sm" style="color:#1E2124">Trillion</span></span></div>
+        <div class="rco">트릴리온랩스</div>
+        <div class="rmodel">—</div>
+        <span class="rparam">—</span>
+        <span class="rstat add">● 추가공모 탈락</span>
+        <div class="rnote">기술 자립도 우수 평가받았으나 모티프와 경합서 미선정</div>
+      </div>
+      <div class="rcard out">
+        <div class="rlogo" title="KT (+솔트룩스 컨소시엄)"><span class="lchip"><span class="wm lc" style="color:#EC0A0A">kt</span></span></div>
+        <div class="rco">KT (+솔트룩스·크라우드웍스)</div>
+        <div class="rmodel">믿:음(KT) / 루시아(솔트룩스)</div>
+        <span class="rparam">—</span>
+        <span class="rstat out">● 트랙 외</span>
+        <div class="rnote">18개 기관 컨소시엄 지원했으나 정예팀 미선정</div>
+      </div>
+      <div class="rcard out">
+        <div class="rlogo" title="코난테크놀로지"><span class="lchip"><span class="wm sm" style="color:#FF6600">Konan</span></span></div>
+        <div class="rco">코난테크놀로지</div>
+        <div class="rmodel">코난 LLM (제조 AI 과제)</div>
+        <span class="rparam">—</span>
+        <span class="rstat out">● 트랙 외</span>
+        <div class="rnote">제조 AI 파운데이션 모델 컨소시엄 별도 지원 — 정예팀 미선정</div>
+      </div>
+      <div class="rcard out">
+        <div class="rlogo" title="카카오"><span class="lchip" style="background:#FEE500; border-color:#F5D800"><span class="wm lc" style="color:#000">kakao</span></span></div>
+        <div class="rco">카카오</div>
+        <div class="rmodel">카나나(Kanana — 오픈소스 4종)</div>
+        <span class="rparam">—</span>
+        <span class="rstat out">● 트랙 외</span>
+        <div class="rnote">독파모 미참여. 2026-04-21 카카오톡 내 카나나 정식 출시</div>
+      </div>
+    </div>
+    <div class="foot-src" style="margin-top:11px"><span class="badge a">A</span> 과기정통부/정책브리핑(독파모 1차 단계평가 결과) <a class="src" href="https://www.korea.kr/briefing/policyBriefingView.do?newsId=156740468" target="_blank" rel="noopener">원문↗</a> — 이번 보고기간 갱신 트리거 없음(직전 확정본 유지)</div>
+
+    <div style="font-size:14px; font-weight:700; color:var(--krds-text); margin:18px 0 10px; padding-top:14px; border-top:1px solid var(--krds-border);">② 국산 소비자 AI 서비스 <span class="muted" style="font-weight:700">측정 기준 상이 출처 분리 — 절대 합산·비교 불가</span></div>
+    <div class="row cols2 even" style="margin-bottom:0; gap:16px;">
+      <div class="cs-block">
+        <div class="cs-head">이용경험률 TOP10 <span class="badge b">B</span> <span class="muted" style="font-weight:700">국산 <span style="color:var(--krds-primary-deep)">파랑</span></span></div>
+        <div class="cs-basis">컨슈머인사이트 제42차(2025 하반기), 표본 3,148명 자기보고 이용경험률 · 반기. 막대는 1위 기준 상대폭.</div>
+        <div class="usebar-row"><span class="un">ChatGPT</span><div class="utrack"><div class="ufill" style="width:100.0%; background:var(--c1)"></div></div><span class="uval">54%</span></div>
+        <div class="usebar-row"><span class="un">제미나이</span><div class="utrack"><div class="ufill" style="width:55.6%; background:var(--c1)"></div></div><span class="uval">30%</span></div>
+        <div class="usebar-row"><span class="un">에이닷 <span class="kmark">국산</span></span><div class="utrack"><div class="ufill" style="width:31.5%; background:var(--krds-primary-deep)"></div></div><span class="uval">17%</span></div>
+        <div class="usebar-row"><span class="un">뤼튼 <span class="kmark">국산</span></span><div class="utrack"><div class="ufill" style="width:24.1%; background:var(--krds-primary-deep)"></div></div><span class="uval">13%</span></div>
+        <div class="usebar-row"><span class="un">클로바노트 <span class="kmark">국산</span></span><div class="utrack"><div class="ufill" style="width:18.5%; background:var(--krds-primary-deep)"></div></div><span class="uval">10%</span></div>
+        <div class="usebar-row"><span class="un">퍼플렉시티</span><div class="utrack"><div class="ufill" style="width:14.8%; background:var(--c1)"></div></div><span class="uval">8%</span></div>
+        <div class="usebar-row"><span class="un">코파일럿</span><div class="utrack"><div class="ufill" style="width:13.0%; background:var(--c1)"></div></div><span class="uval">7%</span></div>
+        <div class="usebar-row"><span class="un">클로바X <span class="kmark">국산</span></span><div class="utrack"><div class="ufill" style="width:11.1%; background:var(--krds-primary-deep)"></div></div><span class="uval">6%</span></div>
+        <div class="usebar-row"><span class="un">노션AI</span><div class="utrack"><div class="ufill" style="width:9.3%; background:var(--c1)"></div></div><span class="uval">5%</span></div>
+        <div class="usebar-row"><span class="un">익시오 <span class="kmark">국산</span></span><div class="utrack"><div class="ufill" style="width:7.4%; background:var(--krds-primary-deep)"></div></div><span class="uval">4%</span></div>
+        <div class="foot-src">전체 응답자 74% AI 경험. 국산 5종 top10 포착. 파운데이션 모델(엑사원·솔라·A.X·카나나)은 설문 특성상 미포착. <span class="badge b">B</span> <a class="src" href="https://www.consumerinsight.co.kr/boardView?no=3832&id=ins02_list&schFlag=0" target="_blank" rel="noopener">원문↗</a></div>
+      </div>
+      <div class="cs-block">
+        <div class="cs-head">생성형 AI 앱 MAU <span class="badge b">B</span> <span class="muted" style="font-weight:700">와이즈앱 · 2026-02</span></div>
+        <div class="cs-basis">와이즈앱·리테일 앱 단위 MAU(만 명)·월간. 다른 출처(모바일인덱스 등)와 모수 상이 — 혼용 금지. 국산 <span style="color:var(--krds-primary-deep)">파랑 테두리</span>.</div>
+        <div class="maugrid">
+          <div class="mau-c"><div class="mn">ChatGPT</div><div class="mv">2,293<span class="u">만</span></div></div>
+          <div class="mau-c kr"><div class="mn">제타 <span class="kmark">국산</span></div><div class="mv">402<span class="u">만</span></div><div class="mnote">사용시간 1위</div></div>
+          <div class="mau-c"><div class="mn">그록</div><div class="mv">153<span class="u">만</span></div></div>
+          <div class="mau-c"><div class="mn">퍼플렉시티</div><div class="mv">152<span class="u">만</span></div></div>
+          <div class="mau-c kr"><div class="mn">뤼튼 <span class="kmark">국산</span></div><div class="mv">135<span class="u">만</span></div><div class="mnote">2025-11 이후 하락</div></div>
+          <div class="mau-c kr"><div class="mn">에이닷 <span class="kmark">국산</span></div><div class="mv">119<span class="u">만</span></div><div class="mnote">앱 단위(자체발표 1,000만과 모수 상이)</div></div>
+          <div class="mau-c kr"><div class="mn">크랙 <span class="kmark">국산</span></div><div class="mv">98<span class="u">만</span></div><div class="mnote">사용시간 3위</div></div>
+          <div class="mau-c"><div class="mn">클로드</div><div class="mv">76<span class="u">만</span></div><div class="mnote">전월 53만→76만 +45%</div></div>
+        </div>
+        <div class="foot-src">국산 파운데이션 모델 미포착(B2B/API 중심). <span class="badge b">B</span> <a class="src" href="https://www.aitimes.com/news/articleView.html?idxno=207757" target="_blank" rel="noopener">원문↗</a></div>
+      </div>
+    </div>
+    <div class="foot-src" style="margin-top:11px; border-top:1px solid var(--krds-border); padding-top:9px;">⚠ <b style="color:var(--krds-text)">'점유율' 명칭·단일 % 합산 금지</b> — 주지표=단계평가(A), 병기=이용경험률(B), 참고=앱 MAU(B·와이즈앱·단일 출처). 모바일인덱스 MAU·운영사 자체발표는 렌더링 제외.</div>
+  </section>
+  </div><!-- /클러스터 🌐 글로벌·경쟁 위치 -->
+
+  <!-- ═══ 클러스터: 🏛 정책·투자 ═══ -->
+  <div class="cluster">
+  <div class="cluster-head"><span class="ch-ico">🏛</span> 정책·투자 <span class="ch-sub">AI 정책·거버넌스 · AI 투자·인재</span></div>
+
+  <!-- ═══ AI 정책·거버넌스 (전폭, non-aux) ═══ -->
+  <section class="card" style="margin-bottom:16px">
+    <h2>AI 정책·거버넌스 동향 <span class="subt">사실 기반(비-보조지표) · 기준일 2026-06-17</span> <span class="cadence-chip">이벤트성</span></h2>
+    <div class="pol-new none">본 주차 신규 입법·시행 이벤트 없음 (현행 정책 유지) — 직전 확정본 유지</div>
+    <div class="pol-hist">
+      <div class="muted" style="font-weight:700; margin-bottom:10px; color:var(--krds-text-sub)">현행 정책 히스토리 <span style="font-weight:400">(신규 아님 · 기존·시행 중 정책 목록)</span></div>
+      <div class="pol-grid">
+        <div class="pol-col">
+          <h3>🇰🇷 국내 <span class="cnt" style="background:var(--krds-caption)">6</span></h3>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026-01-22</span> <span class="schip live">시행</span> <span class="chip">법률</span></div>
+            <div class="pi-title">AI 기본법 전면 시행</div>
+            <div class="pi-foot"><span class="muted">EU 다음 2번째 AI 포괄법(전면적용 최이른). 투명성·고영향 AI 책무·생성형 AI 표시 의무.</span> <span class="badge b">B</span> <a class="src" href="https://www.lawtimes.co.kr/news/articleView.html?idxno=216500" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026-01-22</span> <span class="schip live">시행</span> <span class="chip">법률</span></div>
+            <div class="pi-title">AI 기본법 시행령 시행 · 과태료 계도기간</div>
+            <div class="pi-foot"><span class="muted">고영향 AI 10개 영역·의무 구체화. 최소 1년 이상 계도(부과 2027 이후 예상).</span> <span class="badge b">B</span> <a class="src" href="https://www.daeryunlaw.com/newsletter/news/246" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026-02-25</span> <span class="schip live">확정</span> <span class="chip">전략</span></div>
+            <div class="pi-title">AI 기본계획(2026~2028) 의결</div>
+            <div class="pi-foot"><span class="muted">3대 정책축·12대 전략분야, 99개 과제·326개 권고. 2028 AI 3강 목표.</span> <span class="badge a">A</span> <a class="src" href="https://smartcity.go.kr/wp-content/uploads/2026/03/%EC%95%88%EA%B1%B41%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5%ED%96%89%EB%8F%99%EA%B3%84%ED%9A%8D%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5%EA%B8%B0%EB%B3%B8%EA%B3%84%ED%9A%8D20262028.pdf" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026-01-01</span> <span class="schip live">시행</span> <span class="chip">예산</span></div>
+            <div class="pi-title">2026 정부 AI 예산 9.9조원(역대 최대)</div>
+            <div class="pi-foot"><span class="muted">전년 본예산 대비 약 3배. R&D 총 35.5조원. 'AI 3강 도약 원년'.</span> <span class="badge a">A</span> <a class="src" href="https://www.nabo.go.kr/board/file/down.do?fid=33319071" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026-05</span> <span class="schip plan">입법예고</span> <span class="chip">법률</span></div>
+            <div class="pi-title">AI 기본법 시행령 개정안 입법예고</div>
+            <div class="pi-foot"><span class="muted">AI 산업 육성 강화 차원 보강(과기정통부).</span> <span class="badge b">B</span> <a class="src" href="https://eiec.kdi.re.kr/policy/materialView.do?num=281382&pg=&pp=&topic=L" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026</span> <span class="schip plan">추진</span> <span class="chip">가이드라인</span></div>
+            <div class="pi-title">금융분야 AI 가이드라인 통합·개정(금융위)</div>
+            <div class="pi-foot"><span class="muted">기존 3건 통합(1Q)·위험관리 상시 모니터링(4Q) 계획.</span> <span class="badge a">A</span> <a class="src" href="https://www.fsc.go.kr/no010101/83594" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+        </div>
+        <div class="pol-col">
+          <h3>🌍 해외 <span class="cnt" style="background:var(--krds-caption)">5</span></h3>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026-08-02</span> <span class="schip plan">단계적 시행(예정)</span> <span class="chip gl">EU</span></div>
+            <div class="pi-title">EU AI Act — GPAI 집행권한·고위험 의무 발효</div>
+            <div class="pi-foot"><span class="muted">GPAI 제공자 의무는 2025-08-02부터 적용 중. 기존 GPAI는 2027-08-02까지 유예.</span> <span class="badge a">A</span> <a class="src" href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2025-12-11</span> <span class="schip live">시행</span> <span class="chip gl">미국</span></div>
+            <div class="pi-title">EO 14365 — AI 국가정책 단일프레임워크(주 AI법 대응)</div>
+            <div class="pi-foot"><span class="muted">주별 규제 일관성 지향. DOJ AI 소송 태스크포스(2026-01-10~).</span> <span class="badge b">B</span> <a class="src" href="https://www.mayerbrown.com/en/insights/publications/2025/12/president-trump-issues-executive-order-on-ensuring-a-national-policy-framework-for-artificial-intelligence" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2026-06-02</span> <span class="schip live">시행</span> <span class="chip gl">미국</span></div>
+            <div class="pi-title">AI 모델 사전평가 협조 요청 EO(연방 조기 접근)</div>
+            <div class="pi-foot"><span class="muted">전면 출시 전 모델 역량 평가를 위해 연방정부에 모델 제공 요청.</span> <span class="badge a">A</span> <a class="src" href="https://www.whitehouse.gov/fact-sheets/2026/06/fact-sheet-president-donald-j-trump-promotes-advanced-artificial-intelligence-innovation-and-security/" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2025-09-01</span> <span class="schip live">시행</span> <span class="chip gl">일본</span></div>
+            <div class="pi-title">AI 추진법 전면 시행</div>
+            <div class="pi-foot"><span class="muted">벌칙 없는 진흥형('혁신우선') 거버넌스. 국가 목표·기본계획 중심.</span> <span class="badge a">A</span> <a class="src" href="https://www.gov-online.go.jp/hlj/en/november_2025/november_2025-08.html" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+          <div class="pol-item">
+            <div class="pi-head"><span class="pi-date">2025-2026</span> <span class="schip plan">추진</span> <span class="chip gl">중국</span></div>
+            <div class="pi-title">생성형 AI 규제 강화 — '관리된 혁신' 기조</div>
+            <div class="pi-foot"><span class="muted">육성하면서 생성형 AI 사전통제 장치 구축(정책 기조 요약).</span> <span class="badge b">B</span> <a class="src" href="https://www.ebn.co.kr/news/articleView.html?idxno=1692723" target="_blank" rel="noopener">원문↗</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot-src" style="margin-top:11px; border-top:1px solid var(--krds-border); padding-top:9px;">정책 사실 기반 섹션(비-보조지표). 현행 정책 히스토리(회색=신규 아님). 'AI 기본법 세계 최초' 아님 — EU 다음 2번째 포괄법·전면적용 최이른. 이번 보고기간 신규 입법·시행 이벤트 미포착.</div>
+  </section>
+
+  <!-- ═══ AI 투자·인재 (전폭, aux) ═══ -->
+  <section class="card" style="margin-bottom:16px">
+    <h2>AI 투자·인재 지표 <span class="subt">연간/분기 · 주간 갱신 대상 아님</span> <span class="cadence-chip">연·분기</span></h2>
+    <div class="aux">⚠ 보조지표 — 출처별 산정방식·집계 시점·통화 단위 상이. 단일 비교·합산 금지(글로벌 USD·국내 원화·corporate≠private). 정책 증빙 미합산.</div>
+    <div class="headline">글로벌 기업 AI 투자 <span class="hl-key">5,817억달러(+130%)</span> · 한국 'K-AI 역설'(인재 순유입 OECD 35/38위)</div>
+    <div style="font-size:13px; font-weight:700; color:var(--krds-text); margin:6px 0 8px;">투자</div>
+    <div class="it-grid">
+      <div class="it-c"><div class="il">글로벌 기업(corporate) AI 투자</div><div class="iv">5,817<span class="u"> 억$</span></div><span class="iscope gl">글로벌·2025</span><div class="inote">전년 2,530억$ 대비 +130%. Stanford HAI(광의).</div></div>
+      <div class="it-c"><div class="il">글로벌 민간(private) AI 투자</div><div class="iv">3,447<span class="u"> 억$</span></div><span class="iscope gl">글로벌·2025</span><div class="inote">+127.5%. corporate의 약 60%(혼용 금지).</div></div>
+      <div class="it-c"><div class="il">미·중 민간 AI 투자 비교</div><div class="iv">2,859<span class="u"> vs 124 억$</span></div><span class="iscope cmp">비교·2025</span><div class="inote">미국이 중국의 약 23배. 중국 국가펀드 집계 제외(과소표시).</div></div>
+      <div class="it-c kr"><div class="il">한국 AI 분야 벤처투자(모델·인프라)</div><div class="iv">1조 3,352<span class="u"> 억원</span></div><span class="iscope kr">국내·2025</span><div class="inote">12대 신산업 1위, 전체 벤처투자의 19.6%. 통화 단위 다름.</div></div>
+      <div class="it-c kr"><div class="il">한국 정부 AI 예산(과기정통부 AX, 2026)</div><div class="iv">5조 1,000<span class="u"> 억원</span></div><span class="iscope kr">국내·2026</span><div class="inote">과기정통부 23.7조 중 'AI 대전환' 분야(국회 통과).</div></div>
+    </div>
+    <div style="font-size:13px; font-weight:700; color:var(--krds-text); margin:14px 0 8px;">인재</div>
+    <div class="it-grid">
+      <div class="it-c cmp"><div class="il">한국 AI 인재 순유입(OECD)</div><div class="iv">35<span class="u"> 위/38국</span></div><span class="iscope cmp">비교·2025</span><div class="inote">순유입률 -0.36/만명. 특허밀도 1위·도입증가율 1위 vs 인재 유출 'K-AI 역설'.</div></div>
+      <div class="it-c kr"><div class="il">국내 AI 인력 규모(직무별 총계)</div><div class="iv">53,655<span class="u"> 명</span></div><span class="iscope kr">국내·2024</span><div class="inote">개발자 39,214명(73.1%). 과기정통부·SPRi 실태조사.</div></div>
+      <div class="it-c kr"><div class="il">국내 AI 도입기업 인력 부족 응답</div><div class="iv">81.9<span class="u"> %</span></div><span class="iscope kr">국내·2023</span><div class="inote">AI 사업 영위 2,354곳 중. SPRi IS-164.</div></div>
+    </div>
+    <div class="foot-src" style="margin-top:11px; border-top:1px solid var(--krds-border); padding-top:9px;">출처별 통화·모수 상이 — 단순 비교·합산 금지. 연·분기 갱신(주간 대상 아님). <span class="badge b">B</span> Stanford HAI / 중기부 / SPRi 등 <a class="src" href="https://hai.stanford.edu/ai-index/2026-ai-index-report" target="_blank" rel="noopener">원문↗</a> · committee_structure(8개 분과)·subcommittee_tags는 렌더링 제외.</div>
+  </section>
+  </div><!-- /클러스터 🏛 정책·투자 -->
+
+  <!-- ═══ 푸터: 핵심 인사이트 & 메가트렌드 통합 (전폭) ═══ -->
+  <section class="card foot">
+    <h2>핵심 인사이트 &amp; 메가트렌드 <span class="subt">금주 핵심 흐름 · insights+mega_trends 주제별 통합</span></h2>
+    <div class="mt-grid">
+      <div class="mt-card"><div class="mt-key">프런티어 SOTA 정체 — 5개 역량 전부 변동 0</div><div class="mt-sub">Coding 95.0·Reasoning 94.6·Cyber 100·Multimodal 94.0·Agent 74.6 전부 delta 0. 신규는 GLM-5.2(744B MoE·MIT)뿐이나 표준 SWE-bench 미등재로 SOTA 미교체. Agent(GAIA) sample→live 승격.</div></div>
+      <div class="mt-card"><div class="mt-key">소버린 AI ETF 동반 약세 전환</div><div class="mt-sub">KODEX -3.58%·1Q -8.67%(직전 +5.84%/-2.02%에서 동반 하락). 1Q 낙폭 큰 것은 카카오·NAVER 비중 합 53.2%(시장 보조지표·참고용).</div></div>
+      <div class="mt-card"><div class="mt-key">AI 인프라 — '신규 확정 발표' 공백, 비수도권 분산 지형</div><div class="mt-sub">적격 데이터센터 신규 발표 글로벌 0·국내 0건(검색은 capex 가이던스·진행중 위주). 울산 출범식은 2025-06-20 이벤트로 기간 밖. 전국 9권역 지도화(운영 3·구축 2·계획 3·후보 1).</div></div>
+      <div class="mt-card"><div class="mt-key">거버넌스·투자 구조 정착 — 'K-AI 역설' 지속</div><div class="mt-sub">AI 기본법 전면시행·기본계획·예산 9.9조 현행 유지(신규 입법 없음). 글로벌 기업 AI 투자 5,817억$(+130%) 대비 한국 인재 순유입 OECD 35/38위.</div></div>
+    </div>
+    <div class="policy"><b>정책 판단 보조지표</b> — 참고용(시장 데이터): <span class="muted">본 보고기간은 SOTA·정책·반도체가 직전 값 유지된 안정 구간(갱신 주기 규칙에 따른 정상 이월·데이터 공백 아님). 유일 신규는 GLM-5.2(표준벤치 미등재로 SOTA 미반영). 점유율·메모리·ETF·투자 보조지표는 정책 증빙에 미합산. 울산 출범식은 2025-06-20 이벤트로 datacenter_domestic 미카운트.</span></div>
+    <div class="note">
+      신뢰도 배지: <span class="badge a">A</span> 1차 공식 출처(공시·공식 발표·정부 통계) · <span class="badge b">B</span> 2차 출처(언론·시장조사) · <span class="badge c">C</span> 단일·보조 출처 · 모든 수치에 출처·기준일 명기. 생성 2026-06-22T18:00:00+09:00 · 스타일 KRDS(범정부 디자인시스템) 변형
+    </div>
+  </section>
+
+</main>
+<a href="#top" class="toplink" aria-label="맨 위로">↑ TOP</a>
+</body>
+</html>

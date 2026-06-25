@@ -48,6 +48,9 @@
   .rbubble{pointer-events:none;transition:r .55s cubic-bezier(.4,0,.2,1),opacity .3s,fill .3s,stroke .3s;}
   .bub .ldot{display:none;}  /* 버블(절대량) 모드에선 리더 중심점 숨김 — 버블이 위치 표시 */
   .rbar2{pointer-events:none;transition:height .5s cubic-bezier(.4,0,.2,1),y .5s cubic-bezier(.4,0,.2,1),fill .3s;}
+  .aidcmode .rlabel,.aidcmode .leader,.aidcmode .ldot,.aidcmode .rval,.aidcmode .rval2{display:none;}  /* AIDC 도시맵: 시도 이름표 숨겨 글씨 충돌 제거 */
+  .aidclbl{font-size:8.8px;fill:#16202b;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:2.4px;font-weight:800;pointer-events:none;}
+  .aidlcap{font-size:8px;fill:#3a4654;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:2.2px;font-weight:700;pointer-events:none;}
   .rbartrack{fill:#fff;fill-opacity:.3;stroke:#0000001f;stroke-width:.6;pointer-events:none;}
   .rbarfill{fill:#2b3a47;stroke:#fff;stroke-width:.8;paint-order:stroke;pointer-events:none;transition:width .45s cubic-bezier(.4,0,.2,1);}
   .ovl{position:absolute;display:flex;gap:6px;} .ovl.tl{top:12px;left:12px;} .ovl.tr{top:12px;right:12px;flex-direction:column;align-items:flex-end;}
@@ -378,40 +381,43 @@ window.WOLBO = {
   const SHORTS=Object.values(NAME), HOURS=8760;
 
 
-  // 국내 주요 AI 데이터센터(AIDC) 현황 — 메이저 언론/기업·지자체 공식 발표(2024~2026). 출처 없는 항목 미포함, 용량·연도는 보도 명시값만.
-  const AIDC={region:{
-    "서울":[
-      {name:"KT클라우드 가산 AIDC",op:"KT클라우드",city:"금천구",st:"운영중",mw:40,y:"2025",src:"테크M",url:"https://www.techm.kr/news/articleView.html?idxno=146291",d:"국내 첫 리퀴드쿨링 상용화"},
-      {name:"SK브로드밴드 가산 DC",op:"SK브로드밴드",city:"금천구",st:"운영중",mw:40,y:null,src:"디일렉",url:"https://www.thelec.kr/news/articleView.html?idxno=53349",d:"서울 최대급(수전40·IT26MW)"}],
-    "경기":[
-      {name:"카카오 안산 데이터센터",op:"카카오",city:"안산시",st:"운영중",mw:null,y:"2024",src:"카카오",url:"https://www.kakaocorp.com/page/detail/11097",d:"한양대 ERICA, 서버 12만대"},
-      {name:"삼성SDS 동탄 데이터센터",op:"삼성SDS",city:"화성시",st:"건설중",mw:40,y:"2026",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20251104172216",d:"동관20MW 운영·서관20MW 임박"},
-      {name:"LG유플러스 평촌2 DC",op:"LG유플러스",city:"안양시",st:"운영중",mw:null,y:null,src:"디일렉",url:"https://www.thelec.kr/news/articleView.html?idxno=37864",d:"하이퍼스케일급"}],
-    "강원":[
-      {name:"네이버 각 춘천",op:"네이버클라우드",city:"춘천시",st:"운영중",mw:null,y:"2013",src:"블로터",url:"https://www.bloter.net/news/articleView.html?idxno=47644",d:"네이버 첫 DC"},
-      {name:"삼성SDS 춘천 데이터센터",op:"삼성SDS",city:"춘천시",st:"운영중",mw:null,y:"2019",src:"메트로신문",url:"https://www.metroseoul.co.kr/article/2019092200006",d:"SDDC 기반"}],
-    "세종":[
-      {name:"네이버 각 세종",op:"네이버클라우드",city:"세종시",st:"운영중",mw:270,y:"2023",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20231106150331",d:"최종 270MW급, 서버 60만유닛"},
-      {name:"네이버 각 세종 2·3단계 증설",op:"네이버클라우드",city:"세종시",st:"건설중",mw:null,y:"2027~29",src:"전자신문",url:"https://www.etnews.com/20251028000113",d:"AI 인프라 확장"}],
-    "광주":[
-      {name:"NHN 광주 국가AI데이터센터",op:"NHN클라우드",city:"광산구",st:"운영중",mw:null,y:"2023",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20231103130906",d:"88.5PF·107PB, 첨단3지구"}],
-    "충남":[
-      {name:"천안 AI 데이터센터",op:"㈜금강",city:"천안시",st:"계획",mw:80,y:"2029",src:"에너지신문",url:"https://www.energy-news.co.kr/news/articleView.html?idxno=222419",d:"직산읍, 1.2조원"}],
-    "전북":[
-      {name:"새만금 AI 데이터센터",op:"현대차그룹",city:"군산(새만금)",st:"계획",mw:100,y:"2029",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20260227114409",d:"현대차 9조 투자중 AIDC 5.8조, GPU5만장"}],
-    "전남":[
-      {name:"솔라시도 국가AI컴퓨팅센터",op:"삼성SDS 컨소시엄(KT·네이버·카카오)",city:"해남군",st:"계획",mw:null,y:"2026 착공목표",src:"전자신문",url:"https://www.etnews.com/20251021000288",d:"국가AI컴퓨팅센터 전남 유치, 약 2.5조"}],
-    "경북":[
-      {name:"구미 AI 데이터센터 클러스터",op:"경북·구미·로데파트너스",city:"구미시",st:"계획",mw:1300,y:"2029",src:"디지털데일리",url:"https://www.ddaily.co.kr/page/view/2025121910314122574",d:"하이테크밸리 1.3GW, 1단계 300MW"},
-      {name:"삼성SDS 구미 데이터센터",op:"삼성SDS",city:"구미시",st:"건설중",mw:60,y:"2029",src:"디지털데일리",url:"https://m.ddaily.co.kr/page/view/2026010809063760230",d:"옛 구미1사업장, 4273억"},
-      {name:"OpenAI·삼성SDS 포항(스타게이트)",op:"OpenAI·삼성SDS",city:"포항시",st:"계획",mw:20,y:"2027",src:"한국경제",url:"https://www.hankyung.com/article/2025100117571",d:"초기20MW(최대200), 스타게이트 코리아"},
-      {name:"포항 글로벌 AIDC(광명산단)",op:"포항시 유치",city:"포항시",st:"계획",mw:40,y:"2027",src:"경북매일",url:"https://www.kbmaeil.com/article/20251201500382",d:"광명일반산단, 총 2조"}],
-    "울산":[
-      {name:"SK AI 데이터센터 울산",op:"SKT·SK에코플랜트·AWS",city:"남구",st:"건설중",mw:103,y:"2027~29",src:"SKT 뉴스룸",url:"https://news.sktelecom.com/214708",d:"SK·AWS, 25.8 기공, GPU6만장, 약7조"}]
-  }};
-  const AIDCR=AIDC.region;
-  const aidcCnt=(s)=>(AIDCR[s]||[]).length;
-  const aidcMW=(s)=>(AIDCR[s]||[]).reduce((a,p)=>a+(p.mw||0),0);   // 시도 AIDC 총 용량(보도 명시값 합, 미공표=0)
+  // 국내 주요 AI 데이터센터(AIDC) — 도시 단위 좌표·확정/목표 MW. 메이저 언론/공식발표(2024~2026), 출처 없으면 미포함.
+  // 원칙: 서로 다른 사업은 '합산 금지' — 도시 원 크기는 대표(최대 단일) 사업 기준, 나머지는 별도 표기.
+  const AIDC={cities:[
+    {city:"서울 금천",sido:"서울",lon:126.90,lat:37.46,dx:-48,dy:-46,st:"운영중",mwC:40,mwT:null,projects:[
+      {name:"KT클라우드 가산 AIDC",op:"KT클라우드",mwC:40,mwT:null,st:"운영중",y:"2025",src:"테크M",url:"https://www.techm.kr/news/articleView.html?idxno=146291",d:"국내 첫 리퀴드쿨링"},
+      {name:"SK브로드밴드 가산 DC",op:"SK브로드밴드",mwC:40,mwT:null,st:"운영중",y:null,src:"디일렉",url:"https://www.thelec.kr/news/articleView.html?idxno=53349",d:"서울 최대급(수전40·IT26)"}]},
+    {city:"화성 동탄",sido:"경기",lon:127.10,lat:37.20,dx:-71,dy:30,st:"건설중",mwC:40,mwT:null,projects:[
+      {name:"삼성SDS 동탄 DC",op:"삼성SDS",mwC:40,mwT:null,st:"건설중",y:"2026",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20251104172216",d:"동관20·서관20MW"}]},
+    {city:"안산",sido:"경기",lon:126.82,lat:37.31,dx:-58,dy:5,st:"운영중",mwC:null,mwT:null,projects:[
+      {name:"카카오 안산 DC",op:"카카오",mwC:null,mwT:null,st:"운영중",y:"2024",src:"카카오",url:"https://www.kakaocorp.com/page/detail/11097",d:"한양대 ERICA, 서버 12만대"}]},
+    {city:"안양 평촌",sido:"경기",lon:126.95,lat:37.39,dx:-67,dy:-21,st:"운영중",mwC:null,mwT:null,projects:[
+      {name:"LG유플러스 평촌2 DC",op:"LG유플러스",mwC:null,mwT:null,st:"운영중",y:null,src:"디일렉",url:"https://www.thelec.kr/news/articleView.html?idxno=37864",d:"하이퍼스케일급"}]},
+    {city:"춘천",sido:"강원",lon:127.73,lat:37.88,st:"운영중",mwC:null,mwT:null,projects:[
+      {name:"네이버 각 춘천",op:"네이버클라우드",mwC:null,mwT:null,st:"운영중",y:"2013",src:"블로터",url:"https://www.bloter.net/news/articleView.html?idxno=47644",d:"네이버 첫 DC"},
+      {name:"삼성SDS 춘천 DC",op:"삼성SDS",mwC:null,mwT:null,st:"운영중",y:"2019",src:"메트로신문",url:"https://www.metroseoul.co.kr/article/2019092200006",d:"SDDC 기반"}]},
+    {city:"세종",sido:"세종",lon:127.29,lat:36.49,st:"운영중",mwC:270,mwT:null,projects:[
+      {name:"네이버 각 세종(+증설)",op:"네이버클라우드",mwC:270,mwT:null,st:"운영중",y:"2023~",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20231106150331",d:"270MW급·2/3단계 증설(27~29)"}]},
+    {city:"광주 광산",sido:"광주",lon:126.79,lat:35.16,st:"운영중",mwC:null,mwT:null,projects:[
+      {name:"NHN 광주 국가AI데이터센터",op:"NHN클라우드",mwC:null,mwT:null,st:"운영중",y:"2023",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20231103130906",d:"88.5PF·107PB, MW미공표"}]},
+    {city:"천안",sido:"충남",lon:127.15,lat:36.81,st:"계획",mwC:80,mwT:null,projects:[
+      {name:"천안 AI DC",op:"㈜금강",mwC:80,mwT:null,st:"계획",y:"2029",src:"에너지신문",url:"https://www.energy-news.co.kr/news/articleView.html?idxno=222419",d:"직산읍, 1.2조"}]},
+    {city:"새만금",sido:"전북",lon:126.71,lat:35.80,st:"계획",mwC:100,mwT:null,projects:[
+      {name:"새만금 AI DC",op:"현대차그룹",mwC:100,mwT:null,st:"계획",y:"2029",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20260227114409",d:"현대차 9조중 AIDC 5.8조·GPU5만(태양광·수전해 MW와 혼용금지)"}]},
+    {city:"해남 솔라시도",sido:"전남",lon:126.43,lat:34.49,st:"계획",mwC:null,mwT:null,projects:[
+      {name:"솔라시도 국가AI컴퓨팅센터",op:"삼성SDS 컨소시엄",mwC:null,mwT:null,st:"계획",y:"2026착공",src:"전자신문",url:"https://www.etnews.com/20251021000288",d:"2.9조·GPU1.5만·154kV산이변전소 / DC MW미공표(파크 전체 1GW설)"}]},
+    {city:"구미",sido:"경북",lon:128.34,lat:36.12,st:"계획",mwC:1300,mwT:null,projects:[
+      {name:"구미 AI DC 클러스터",op:"경북·구미·로데파트너스",mwC:1300,mwT:null,st:"계획",y:"2029",src:"디지털데일리",url:"https://www.ddaily.co.kr/page/view/2025121910314122574",d:"하이테크밸리 1.3GW(대표값)"},
+      {name:"삼성SDS 구미 DC",op:"삼성SDS",mwC:60,mwT:null,st:"건설중",y:"2029",src:"디지털데일리",url:"https://m.ddaily.co.kr/page/view/2026010809063760230",d:"별도 사업(합산 금지)·옛 구미1사업장"}]},
+    {city:"포항",sido:"경북",lon:129.34,lat:36.02,st:"계획",mwC:40,mwT:200,projects:[
+      {name:"OpenAI·삼성SDS 포항(스타게이트)",op:"OpenAI·삼성SDS",mwC:20,mwT:200,st:"계획",y:"2027",src:"한국경제",url:"https://www.hankyung.com/article/2025100117571",d:"초기20→최대200MW"},
+      {name:"포항 글로벌 AIDC(광명산단)",op:"포항시",mwC:40,mwT:null,st:"계획",y:"2027",src:"경북매일",url:"https://www.kbmaeil.com/article/20251201500382",d:"별도 사업·광명산단 2조"}]},
+    {city:"울산 남구",sido:"울산",lon:129.30,lat:35.54,st:"건설중",mwC:103,mwT:1000,projects:[
+      {name:"SK AI 데이터센터 울산",op:"SKT·SK에코·AWS",mwC:103,mwT:1000,st:"건설중",y:"2027~29",src:"SKT 뉴스룸",url:"https://news.sktelecom.com/214708",d:"7조·GPU6만·1단계41→103MW 확정→1GW 목표"}]}
+  ]};
+  const AIDC_SIDO={};
+  AIDC.cities.forEach(c=>{(AIDC_SIDO[c.sido]=AIDC_SIDO[c.sido]||[]).push(c);});
+  const aidcSidoMW=(s)=>(AIDC_SIDO[s]||[]).reduce((a,c)=>Math.max(a,c.mwC||0),0);   // 대표(최대) 확정 MW (합산 아님)
   const mwFmt=(m)=>m==null?"미공표":m>=1000?(m/1000)+"GW":m+"MW";
   const WB=window.WOLBO, CD=window.CONSUMPTION_DATA;
   if(!WB){document.getElementById("loadErr").style.display="";document.getElementById("mapView").style.display="none";return;}
@@ -465,7 +471,7 @@ window.WOLBO = {
     if(mode==="surplus")return surplus(s);
     if(mode==="cleanshare")return cleanShare(s);
     if(mode==="aidc_count")return aidcCount(s);
-    if(mode==="aidc_status")return aidcMW(s);
+    if(mode==="aidc_status")return aidcSidoMW(s);
   }
   const isDiverging=()=>mode==="selfsuff"||mode==="surplus"||mode==="aidc_count";
   const fuelMode=()=>mode==="capacity"||mode==="generation";
@@ -503,6 +509,7 @@ window.WOLBO = {
   // 절대량 레벨 표시: 원(값∝면적) 또는 세로막대(값∝높이, EPSIS식). regions 위·labels 아래에 깔림
   const bubblesG=document.createElementNS(SVGNS,"g");bubblesG.setAttribute("id","bubbles");vp.insertBefore(bubblesG,labelsG);
   const barsG=document.createElementNS(SVGNS,"g");barsG.setAttribute("id","bars");vp.insertBefore(barsG,labelsG);
+  const aidcG=document.createElementNS(SVGNS,"g");aidcG.setAttribute("id","aidc");aidcG.style.display="none";vp.appendChild(aidcG);   // AIDC 도시 마커(최상단)
   // 제주 인셋 박스 (vp 안 — 지도와 함께 줌/팬, 지역 path 뒤에 깔림). 바닥은 전남 최하단에 맞춤
   {const ib=document.createElementNS(SVGNS,"rect");ib.setAttribute("x",INSET.x);ib.setAttribute("y",INSET.y);ib.setAttribute("width",INSET.w);ib.setAttribute("height",INSET.h);ib.setAttribute("rx",8);ib.setAttribute("fill","#fbfdff");ib.setAttribute("stroke","#b9c2cc");ib.setAttribute("stroke-width",1);ib.setAttribute("stroke-dasharray","4 3");ib.style.pointerEvents="none";regionsG.appendChild(ib);}
   KOREA_GEO.features.forEach(f=>{const s=NAME[f.properties.name];const pr=projFor(f);
@@ -570,7 +577,7 @@ window.WOLBO = {
   let cuRAF=null,cuCur=0;
   function countUp(to){cancelAnimationFrame(cuRAF);const from=cuCur,t0=performance.now(),d=600;(function step(t){const p=Math.min(1,(t-t0)/d),e=1-Math.pow(1-p,3);cuCur=from+(to-from)*e;document.getElementById("legMax").textContent=fmt(cuCur);if(p<1)cuRAF=requestAnimationFrame(step);else cuCur=to;})(t0);}
 
-  function buildYearSel(){const ys=document.getElementById("yearSel");ys.innerHTML="";availYears(mode).forEach(y=>{const b=document.createElement("button");b.textContent=String(y).slice(2)+"년";if(y===year)b.classList.add("active");b.onclick=()=>{year=y;render();};ys.appendChild(b);});}
+  function buildYearSel(){const ys=document.getElementById("yearSel");ys.innerHTML="";if(mode==="aidc_status"){ys.style.display="none";return;}ys.style.display="";availYears(mode).forEach(y=>{const b=document.createElement("button");b.textContent=String(y).slice(2)+"년";if(y===year)b.classList.add("active");b.onclick=()=>{year=y;render();};ys.appendChild(b);});}
   function buildFuelSel(){const fs=document.getElementById("fuelSel");fs.innerHTML="";const on=fuelMode();
     if(!on){fs.style.display="none";return;}   /* 발전원별 색칠은 발전량·설비용량 모드에서만 의미 — 그 외엔 통째로 숨김 */
     fs.style.display="";
@@ -582,17 +589,39 @@ window.WOLBO = {
   const BUB_MAXR=34, BUB_MINR=4.5, BAR_MAXH=74, BAR_W=13;   // 원 반지름·막대 높이/폭(투영 600×720 기준)
   let magViz="bar";   // 절대량 레벨 표시 기본=막대: 'bar'(높이∝값, EPSIS식 선형) | 'circle'(면적∝값)
   function setMag(){
-    const isAbs=["capacity","generation","consumption"].includes(mode), isAidc=mode==="aidc_status";
-    svg.classList.toggle("bub",isAbs||isAidc);
+    const isAbs=["capacity","generation","consumption"].includes(mode);
+    svg.classList.toggle("bub",isAbs);
     document.getElementById("magSel").style.display=isAbs?"":"none";   // 원/막대 토글은 절대량 모드만
-    const c=hexRgb(baseColor()),solid=`rgb(${c[0]},${c[1]},${c[2]})`,disc="rgba(255,255,255,0.82)";   // 흰 디스크+진한 테두리=배경색 무관 가독
-    const valf=isAidc?aidcMW:regionVal;   // AIDC 모드는 원 크기=총 용량(MW)
-    const useCir=(isAbs&&magViz==="circle")||isAidc, useBar=isAbs&&magViz==="bar";
-    const mx=Math.max(...SHORTS.map(valf))||1;
-    if(useCir){SHORTS.slice().sort((a,b)=>valf(b)-valf(a)).forEach(s=>bubblesG.appendChild(bubbles[s]));}   // 작은 원을 위로(가림 방지)
-    SHORTS.forEach(s=>{const v=valf(s),b=bubbles[s],r=bars[s],ce=cents[s];
+    const c=hexRgb(baseColor()),solid=`rgb(${c[0]},${c[1]},${c[2]})`,disc="rgba(255,255,255,0.82)";
+    const useCir=isAbs&&magViz==="circle", useBar=isAbs&&magViz==="bar";
+    const mx=Math.max(...SHORTS.map(regionVal))||1;
+    if(useCir){SHORTS.slice().sort((a,b)=>regionVal(b)-regionVal(a)).forEach(s=>bubblesG.appendChild(bubbles[s]));}
+    SHORTS.forEach(s=>{const v=regionVal(s),b=bubbles[s],r=bars[s],ce=cents[s];
       if(useCir&&v>0){const rad=Math.max(BUB_MINR,BUB_MAXR*Math.sqrt(v/mx));b.setAttribute("r",rad.toFixed(1));b.setAttribute("fill",disc);b.setAttribute("stroke",solid);b.setAttribute("stroke-width","2.2");b.style.display="";}else b.style.display="none";
       if(useBar&&v>0){const h=Math.max(4,BAR_MAXH*(v/mx));r.setAttribute("x",(ce[0]-BAR_W/2).toFixed(1));r.setAttribute("width",BAR_W);r.setAttribute("y",(ce[1]-h).toFixed(1));r.setAttribute("height",h.toFixed(1));r.setAttribute("fill",solid);r.setAttribute("stroke","#fff");r.setAttribute("stroke-width","0.9");r.style.display="";}else r.style.display="none";});
+  }
+  // AIDC 도시 마커: 실제 좌표에 원 — 확정MW=채운 원, 목표MW=점선 외곽링, 미공표=점선 빈원. status색.
+  const AIDC_SC={"운영중":"#228738","건설중":"#FFB114","계획":"#256EF4"};
+  let _aidcBuilt=false;
+  function drawAidcMarkers(show){
+    if(!show){aidcG.style.display="none";return;}
+    aidcG.style.display="";
+    if(_aidcBuilt)return; _aidcBuilt=true;
+    const rOf=(mw)=>Math.max(5,0.55*Math.sqrt(mw)), N=(t)=>document.createElementNS(SVGNS,t);
+    AIDC.cities.slice().sort((a,b)=>Math.max(b.mwC||0,b.mwT||0)-Math.max(a.mwC||0,a.mwT||0)).forEach(c=>{
+      const pt=mainProj(c.lon,c.lat),x=pt[0],y=pt[1],tx=x+(c.dx||0),ty=y+(c.dy||0),col=AIDC_SC[c.st]||"#6D7882";
+      if(c.dx||c.dy){const ld=N("line");ld.setAttribute("x1",x);ld.setAttribute("y1",y);ld.setAttribute("x2",tx);ld.setAttribute("y2",ty);ld.setAttribute("stroke","#9aa6b2");ld.setAttribute("stroke-width","0.8");aidcG.appendChild(ld);
+        const dt=N("circle");dt.setAttribute("cx",x);dt.setAttribute("cy",y);dt.setAttribute("r","1.9");dt.setAttribute("fill",col);aidcG.appendChild(dt);}
+      if(c.mwT&&c.mwT>(c.mwC||0)){const rg=N("circle");rg.setAttribute("cx",tx);rg.setAttribute("cy",ty);rg.setAttribute("r",rOf(c.mwT).toFixed(1));rg.setAttribute("fill","none");rg.setAttribute("stroke",col);rg.setAttribute("stroke-width","1.3");rg.setAttribute("stroke-dasharray","3 2");rg.setAttribute("opacity","0.8");aidcG.appendChild(rg);}
+      const cc=N("circle");cc.setAttribute("cx",tx);cc.setAttribute("cy",ty);
+      if(c.mwC){cc.setAttribute("r",rOf(c.mwC).toFixed(1));cc.setAttribute("fill",col);cc.setAttribute("fill-opacity","0.82");cc.setAttribute("stroke","#fff");cc.setAttribute("stroke-width","1.3");}
+      else{cc.setAttribute("r","6");cc.setAttribute("fill","none");cc.setAttribute("stroke",col);cc.setAttribute("stroke-width","1.5");cc.setAttribute("stroke-dasharray","2 2");}
+      aidcG.appendChild(cc);
+      const ry=Math.max(rOf(c.mwT||0),rOf(c.mwC||1),6);
+      const t1=N("text");t1.setAttribute("x",tx);t1.setAttribute("y",(ty-ry-3).toFixed(1));t1.setAttribute("class","aidclbl");t1.textContent=c.city;aidcG.appendChild(t1);
+      const cap=(c.mwC&&c.mwT)?`${mwFmt(c.mwC)}/${mwFmt(c.mwT)}`:(c.mwC?mwFmt(c.mwC):(c.mwT?"목표 "+mwFmt(c.mwT):"미공표"));
+      const t2=N("text");t2.setAttribute("x",tx);t2.setAttribute("y",(ty+ry+9).toFixed(1));t2.setAttribute("class","aidlcap");t2.textContent=cap;aidcG.appendChild(t2);
+    });
   }
   function render(){
     clampYear();clampFuel();buildYearSel();buildFuelSel();
@@ -605,12 +634,14 @@ window.WOLBO = {
         vbar[s].t.style.display="none";vbar[s].f.style.display="none";});
       document.getElementById("legbar").style.background=`linear-gradient(90deg,${divColor(mid-ma,mid,ma)},${divColor(mid,mid,ma)},${divColor(mid+ma,mid,ma)})`;
       document.getElementById("legMin").textContent=mode==="selfsuff"?"부족":"부족(−)";document.getElementById("legMax").textContent=mode==="selfsuff"?"잉여":mode==="aidc_count"?"수용↑":"잉여(+)";document.getElementById("legUnit").textContent=mode==="selfsuff"?"색=자급률%(기준100) · 라벨 윗줄=자급률% / 아랫줄=과부족GWh":mode==="aidc_count"?"개 · 100MW=1":"GWh · 기준0";
-    }else{const max=Math.max(...vals),base=baseColor(),isAbs=["capacity","generation","consumption"].includes(mode),tot=isAbs?vals.reduce((a,x)=>a+x,0):0;const rk={};if(isAbs){const ord=SHORTS.filter(x=>regionVal(x)>0).sort((a,b)=>regionVal(a)-regionVal(b));ord.forEach((x,i)=>rk[x]=ord.length>1?i/(ord.length-1):1);}SHORTS.forEach(s=>{const v=regionVal(s),t=isAbs?(rk[s]??0):(max>0?v/max:0);paths[s].setAttribute("fill",v>0?seqColor(t,base):"#dde3e9");vlabels[s].textContent=(mode==="aidc_status"&&v<=0&&aidcCnt(s)>0)?(aidcCnt(s)+"개·미공표"):(v>0?((mode==="cleanshare"&&reSweet(s)?"★ ":"")+fmt(v)+(unitOf()==="%"?"%":" "+unitOf())):"—");vlabels2[s].textContent=mode==="cleanshare"?(fmt(cleanGWh(s))+" GWh"):(isAbs&&v>0&&tot>0?"전국 "+(v/tot*100).toFixed(1)+"%":"");
+    }else{const max=Math.max(...vals),base=baseColor(),isAbs=["capacity","generation","consumption"].includes(mode),tot=isAbs?vals.reduce((a,x)=>a+x,0):0;const rk={};if(isAbs){const ord=SHORTS.filter(x=>regionVal(x)>0).sort((a,b)=>regionVal(a)-regionVal(b));ord.forEach((x,i)=>rk[x]=ord.length>1?i/(ord.length-1):1);}SHORTS.forEach(s=>{const v=regionVal(s),t=isAbs?(rk[s]??0):(max>0?v/max:0);paths[s].setAttribute("fill",v>0?seqColor(t,base):"#dde3e9");vlabels[s].textContent=v>0?((mode==="cleanshare"&&reSweet(s)?"★ ":"")+fmt(v)+(unitOf()==="%"?"%":" "+unitOf())):"—";vlabels2[s].textContent=mode==="cleanshare"?(fmt(cleanGWh(s))+" GWh"):(isAbs&&v>0&&tot>0?"전국 "+(v/tot*100).toFixed(1)+"%":"");
       vbar[s].t.style.display="none";vbar[s].f.style.display="none";});
-      document.getElementById("legbar").style.background=`linear-gradient(90deg,${seqColor(0.001,base)},${seqColor(1,base)})`;document.getElementById("legMin").textContent="0";countUp(max);document.getElementById("legUnit").textContent=mode==="cleanshare"?"색=재생E비중% · 라벨=절대 재생E GWh · ★=잉여+비중·절대량 평균↑(우열 아님)":unitOf()+(isEst()?" (추정)":"")+(["capacity","generation","consumption"].includes(mode)?" · 색=상대순위(인접값 구분) · ⬤ 원 크기=실제량 · 라벨 아랫줄=전국 대비%":"")+(mode==="aidc_status"?" · 색·⬤ 원 크기=총 용량(MW, 보도 명시값 합) · 용량 미공표=색 없음(라벨에 개수)":"");}
+      document.getElementById("legbar").style.background=`linear-gradient(90deg,${seqColor(0.001,base)},${seqColor(1,base)})`;document.getElementById("legMin").textContent="0";countUp(max);document.getElementById("legUnit").textContent=mode==="cleanshare"?"색=재생E비중% · 라벨=절대 재생E GWh · ★=잉여+비중·절대량 평균↑(우열 아님)":unitOf()+(isEst()?" (추정)":"")+(["capacity","generation","consumption"].includes(mode)?" · 색=상대순위(인접값 구분) · ⬤ 원 크기=실제량 · 라벨 아랫줄=전국 대비%":"")+(mode==="aidc_status"?" · 🟢운영 🟡건설 ⚪계획 · ⬤=도시별 AIDC(크기=확정MW · 점선링=목표MW · 점선원=미공표)":"");}
     document.getElementById("modeFormula").innerHTML=FORMULA[mode]||"";
     {const rf=document.getElementById("rankFormula"),show=["selfsuff","surplus","cleanshare","aidc_count","aidc_status"].includes(mode);rf.style.display=show?"":"none";rf.innerHTML=show?FORMULA[mode]:"";}
-    setMag();
+    svg.classList.toggle("aidcmode",mode==="aidc_status");
+    if(mode==="aidc_status"){SHORTS.forEach(s=>{paths[s].setAttribute("fill","#eceff3");});}
+    setMag();drawAidcMarkers(mode==="aidc_status");
     renderRank(vals);if(selected)select(selected);else renderDetail();
   }
 
@@ -629,7 +660,7 @@ window.WOLBO = {
     const s=preview||selected||"전국";
     const card=document.getElementById("detailCard");card.style.display="block";
     const NAT=(s==="전국"),rCap=NAT?NATCAP(year):(CAP(year)[s]||{}),rGen=NAT?NATGEN(year):(genEst(year)[s]||{}),rGt=NAT?NATGEN(year).total:((GENT(year)||{})[s]||0),rCons=NAT?SHORTS.reduce((a,x)=>a+((CONS(year)||{})[x]||0),0):((CONS(year)||{})[s]||0);
-    document.getElementById("dTitle").innerHTML=`${NAT?"🇰🇷":"📍"} ${NAT?"전국":s} <span class="badge">${NAT?"대한민국":KIND[s]} · ${year}</span>`;
+    document.getElementById("dTitle").innerHTML=`${NAT?"🇰🇷":"📍"} ${NAT?"전국":s} <span class="badge">${NAT?"대한민국":KIND[s]}${mode==="aidc_status"?" · 현재":" · "+year}</span>`;
     const natShareTxt=()=>{if(NAT)return"";const tot=SHORTS.reduce((a,x)=>a+regionVal(x),0);return tot>0?` · <b style="color:var(--accent)">전국 ${(regionVal(s)/tot*100).toFixed(1)}%</b>`:"";};
     let big;if(mode==="capacity"){big=`${fmt(fuel==="total"?rCap.total:rCap[fuel])}<small>MW · ${fuel==="total"?"총설비":FUEL_META[fuel].label}${natShareTxt()}</small>`;}
     else if(mode==="generation"){big=`${fmt(fuel==="total"?rGt:rGen[fuel])}<small>GWh · ${fuel==="total"?"연간 발전":FUEL_META[fuel].label+(genActual(year)?" 실측":" 추정")}${natShareTxt()}</small>`;}
@@ -637,7 +668,7 @@ window.WOLBO = {
     else if(mode==="selfsuff")big=`${selfSuff(s).toFixed(0)}<small>% · 자급률 (＝전력자립도)</small>`;
     else if(mode==="cleanshare")big=`${reSweet(s)?'<span style="color:#e6a700">★</span> ':""}${cleanShare(s).toFixed(0)}<small>% · 재생E 비중 · 절대 ${fmt(cleanGWh(s))} GWh${reSweet(s)?' · <span style="color:#b8860b;font-weight:800">재생E풍부&잉여</span>':""}</small>`;
     else if(mode==="aidc_count"){const n=aidcCount(s);big=`${n>=0?"+":""}${Math.round(n)}<small>개 · 100MW급 AIDC 수용</small>`;}
-    else if(mode==="aidc_status"){const arr=AIDCR[s]||[],o=arr.filter(x=>x.st==="운영중").length,b=arr.filter(x=>x.st==="건설중").length,pl=arr.filter(x=>x.st==="계획").length,tmw=aidcMW(s);big=arr.length?`${tmw>0?mwFmt(tmw):arr.length+"개"}<small> · 센터 ${arr.length}개 · 🟢${o}·🟡${b}·⚪${pl}${tmw>0?"":" · MW미공표"}</small>`:`0<small>개 · 발췌 현황 없음</small>`;}
+    else if(mode==="aidc_status"){const cs=AIDC_SIDO[s]||[],n=cs.reduce((a,c)=>a+c.projects.length,0),o=cs.filter(c=>c.st==="운영중").length,b=cs.filter(c=>c.st==="건설중").length,pl=cs.filter(c=>c.st==="계획").length,rep=aidcSidoMW(s);big=n?`${rep>0?mwFmt(rep):n+"개소"}<small> · ${cs.length}개 도시·${n}개 사업 · 🟢${o}·🟡${b}·⚪${pl}</small>`:`0<small>개 · 발췌 없음</small>`;}
     else big=`${surplus(s)>=0?"+":""}${fmt(surplus(s))}<small>GWh · 전력 과부족(발전−소비)</small>`;
     document.getElementById("dBig").innerHTML=big;
     {/* 수급 밸런스 — 발전·소비·자급률·과부족 (RE100 모드는 중복이라 생략) */
@@ -667,11 +698,11 @@ window.WOLBO = {
         +`<div style="color:var(--muted);font-size:10.5px;margin-top:3px">※ 원자력·연료전지·IGCC 제외</div></div>`;
       if(genActual(year)){const subs=[["solar","태양광"],["wind","풍력"],["smallhydro","소수력"],["bio","바이오"],["ocean","해양"]].filter(([k])=>(g[k]||0)>0);
         if(subs.length){const smx=Math.max(...subs.map(([k])=>g[k]||0),1);bars.innerHTML+=`<div style="font-size:11px;color:var(--muted);margin:9px 0 3px">└ 신재생 세부 (한전 실측, 참고)</div>`+subs.map(([k,lab])=>row(lab,g[k]||0,FUEL_META[k].color,smx,true)).join("");}}}
-    else if(mode==="aidc_status"){const arr=AIDCR[s]||[];
-      bars.innerHTML=`<div style="font-size:11px;color:var(--muted);margin:10px 0 4px;font-weight:700">AI 데이터센터 현황 (${arr.length}개 · 발췌)</div>`;
-      if(!arr.length)bars.innerHTML+=`<div style="font-size:12px;color:var(--muted);padding:6px 2px">이 지역은 <b>발췌 AIDC 없음</b> (주요 프로젝트만 표기 — 전수 아님).</div>`;
-      else arr.forEach(p=>{const sc={"운영중":"#00863b","건설중":"#b26a00","계획":"#5a6b7a"}[p.st]||"#5a6b7a";bars.innerHTML+=`<div style="padding:7px 10px;margin-top:6px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;font-size:11.5px;line-height:1.55"><div><b>${p.name}</b> <span style="font-size:10px;color:#fff;background:${sc};border-radius:4px;padding:1px 5px">${p.st}</span></div><div style="color:var(--muted);margin-top:2px">${p.op} · ${p.city} · <b style="color:var(--text)">${mwFmt(p.mw)}</b>${p.y?` · ${p.y}`:""}</div><div style="color:var(--muted);font-size:10.5px;margin-top:1px">${p.d} · <a href="${p.url}" target="_blank">${p.src}</a></div></div>`;});
-      bars.innerHTML+=`<div style="color:var(--muted);font-size:10.5px;margin-top:7px">※ 메이저 언론·기업/지자체 공식 발표(2024~2026) · 주요 프로젝트 발췌(전수 아님) · 용량·연도는 보도 명시값만</div>`;}
+    else if(mode==="aidc_status"){const cs=AIDC_SIDO[s]||[];
+      bars.innerHTML=`<div style="font-size:11px;color:var(--muted);margin:10px 0 4px;font-weight:700">AI 데이터센터 · ${s} (발췌)</div>`;
+      if(!cs.length)bars.innerHTML+=`<div style="font-size:12px;color:var(--muted);padding:6px 2px">발췌 AIDC 없음.</div>`;
+      else cs.forEach(c=>c.projects.forEach(p=>{const sc=AIDC_SC[p.st]||"#6D7882";const cap=(p.mwC&&p.mwT)?`확정 ${mwFmt(p.mwC)} / 목표 ${mwFmt(p.mwT)}`:(p.mwC?`확정 ${mwFmt(p.mwC)}`:(p.mwT?`목표 ${mwFmt(p.mwT)}`:"MW 미공표"));bars.innerHTML+=`<div style="padding:7px 10px;margin-top:6px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;font-size:11.5px;line-height:1.55"><div><b>${p.name}</b> <span style="font-size:10px;color:#fff;background:${sc};border-radius:4px;padding:1px 5px">${p.st}</span></div><div style="color:var(--muted);margin-top:2px">${p.op} · ${c.city} · <b style="color:var(--text)">${cap}</b>${p.y?` · ${p.y}`:""}</div><div style="color:var(--muted);font-size:10.5px;margin-top:1px">${p.d} · <a href="${p.url}" target="_blank">${p.src}</a></div></div>`;}));
+      bars.innerHTML+=`<div style="color:var(--muted);font-size:10.5px;margin-top:7px">※ 메이저 언론·공식발표(2024~2026) · 서로 다른 사업 <b>합산 금지</b>(원=대표 사업) · 확정=건설확정 / 목표=발표 최대치</div>`;}
     else{const useGen=(mode!=="capacity");const src=useGen?rGen:rCap;const u=useGen?"GWh":"MW";const mx=Math.max(...FO.map(k=>src[k]||0))||1;const tot=FO.reduce((a,k)=>a+(src[k]||0),0)||1;
     bars.innerHTML=`<div style="font-size:11px;color:var(--muted);margin:10px 0 4px;font-weight:700">발전원별 ${useGen?"발전량 (GWh)":"설비용량 (MW)"}</div>`;
     FO.forEach(k=>{const v=src[k]||0;const row=document.createElement("div");row.className="frow";row.innerHTML=`<div class="fname"><span class="swatch" style="background:${FUEL_META[k].color}"></span>${FUEL_META[k].label}</div><div class="ftrack"><div class="ffill" style="background:${FUEL_META[k].color}"></div></div><div class="fval">${fmt(v)} ${u}<small style="color:var(--muted);font-weight:400;margin-left:4px">${(v/tot*100).toFixed(1)}%</small></div>`;bars.appendChild(row);requestAnimationFrame(()=>row.querySelector(".ffill").style.width=(v/mx*100)+"%");});

@@ -1,0 +1,40 @@
+ 0 | reg= 0 fuel=False gen=False | 자료 이용 주의사항
+ 1 | reg= 0 fuel=False gen=False | 
+ 2 | reg= 0 fuel=False gen=False | 
+ 3 | reg= 0 fuel=False gen=False | 
+ 4 | reg= 0 fuel=False gen=False | 
+ 5 | reg= 0 fuel=True gen=False | 1. 전력시장참여 설비용량
+ 6 | reg= 0 fuel=True gen=False | 6. 신재생에너지 전력시장 참여 설비용량
+ 7 | reg= 0 fuel=False gen=False | 
+ 8 | reg= 0 fuel=False gen=False | 1. 연간 전력시장 통계 개요
+ 9 | reg=17 fuel=False gen=False | 2. 전력시장 참여 설비용량
+10 | reg=17 fuel=False gen=False | 3. 전력거래량
+11 | reg=17 fuel=False gen=False | 4. 전력거래금액
+12 | reg=17 fuel=False gen=False | 5. 정산단가
+13 | reg= 0 fuel=False gen=False | 6. 계통한계가격(SMP)
+14 | reg= 0 fuel=False gen=False | 7. 양수발전 전력거래 내역
+15 | reg= 0 fuel=False gen=False | 8. 항목별 전력거래량
+16 | reg= 0 fuel=False gen=False | 9. 항목별 전력거래금액
+17 | reg= 0 fuel=False gen=False | 
+18 | reg= 1 fuel=False gen=False | 1. 2023년 전력시장 종합 통계
+19 | reg= 0 fuel=True gen=False | 2. 2023년 항목별 전력거래량
+20 | reg= 0 fuel=True gen=False | 2. 2023년 항목별 전력거래량
+21 | reg= 0 fuel=True gen=False | 3. 2023년 항목별 전력거래금액
+22 | reg= 0 fuel=True gen=False | 3. 2023년 항목별 전력거래금액
+23 | reg= 0 fuel=False gen=False | 4. 2023년 계통한계가격
+24 | reg= 0 fuel=False gen=False | 4. 2023년 계통한계가격
+25 | reg= 0 fuel=True gen=False | 4. 2023년 계통한계가격
+26 | reg= 0 fuel=True gen=False | 5. 2023년 계통운영보조서비스정산금
+27 | reg= 0 fuel=True gen=False | 5. 2023년 계통운영보조서비스정산금
+28 | reg= 0 fuel=False gen=False | 
+29 | reg= 0 fuel=True gen=False | 1. 신재생에너지 전력시장 참여 설비용량
+30 | reg= 0 fuel=True gen=False | 2. 신재생에너지 전력거래량
+31 | reg= 0 fuel=True gen=False | 3. 신재생에너지 전력거래금액
+32 | reg= 0 fuel=True gen=False | 4. 신재생에너지 정산단가
+33 | reg=17 fuel=True gen=False | 5. 2023년 지역별 신재생에너지 전력거래 내역
+34 | reg=17 fuel=True gen=False | 5. 2023년 지역별 신재생에너지 전력거래 내역
+35 | reg= 0 fuel=False gen=False | 
+36 | reg= 0 fuel=True gen=False | 1. 회원 통계
+37 | reg= 0 fuel=False gen=False | 2. 수요자원시장 통계
+38 | reg= 0 fuel=False gen=False | 3. REC시장 통계
+39 | reg= 0 fuel=False gen=True | 4. 소규모 전력중개시장 및 직접PPA 통계
