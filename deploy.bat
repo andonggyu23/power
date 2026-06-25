@@ -6,7 +6,8 @@ echo === 대시보드 배포 시작 ===
 REM 편집한 standalone 파일을 사이트가 띄우는 index.html 로 복사
 copy /Y dashboard_standalone.html index.html >nul
 
-git add -A
+REM 사이트 파일만 add (전체 폴더 공개 방지)
+git add index.html dashboard_standalone.html deploy.bat .gitignore
 git commit -m "update dashboard"
 git push
 
