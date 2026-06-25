@@ -370,7 +370,7 @@ window.WOLBO = {
     surplus:"📐 <b>전력 과부족</b> = 발전 − 소비(GWh) · 잉여(過,+) / 부족(不足,−) · <b>평균 잉여출력(GW)</b> = 과부족에너지 ÷ 가동시간",
     cleanshare:"📐 <b>재생에너지(RE100 국제기준)</b> · 지도 색=<b>비중</b>((수력+신재생−연료전지)÷총발전×100%) · 라벨 아랫줄=<b>절대 재생E 발전량</b>(GWh) · ※ <b>연료전지(LNG 개질수소=화석)는 국내 '신재생'이나 RE100 비해당→제외</b> · 원자력도 제외 · <b style='color:#b8860b'>★</b>=<b>에너지 잉여 + 재생E 비중·절대량 모두 평균 이상</b>(세 조건 동시 충족 <b>표시일 뿐, 입지 우열·AIDC 적합도가 아님</b>). ※ 절대량=총발전(조달 가능 여유 아님) · 연간 에너지 잉여 ≠ 송전 접속여유 · 계통영향평가 가점은 사업자 자가조달 계획이 결정.",
     aidc_count:"📐 <b>AIDC 수용(개)</b> = 평균 잉여출력(GW) ÷ 0.1GW (100MW=DC 1개)<br>· <b>평균 잉여출력</b> = 과부족에너지(발전−소비, GWh) ÷ 가동시간(연 8,760h, 당해년도는 경과기간)<br>· 💡 <b>AIDC 1개소(100MW) ≈ NVIDIA B200 약 4.7만 장</b> (PUE 1.2 가정)<br>· 1차 스크리닝 — 실제 입지는 <b>송전 접속여유</b>가 별도 결정",
-    aidc_status:"🏢 <b>AIDC 현황</b> · 지도 색=시도별 <b>AI 데이터센터 수</b>(🟢운영중·🟡건설중·⚪계획, 발췌) · 시도 클릭 시 센터별 주체·용량(MW)·상태·연도·<b>출처 링크</b> · ※ 메이저 언론/기업·지자체 공식 발표(2024~2026) 기준, 주요 프로젝트 발췌(전수 아님)"
+    aidc_status:"🏢 <b>AIDC 현황</b> · 지도 색=시도별 <b>AI 데이터센터 수</b>(<span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:#228738;vertical-align:middle'></span>운영중·<span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:#FFB114;vertical-align:middle'></span>건설중·<span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:#256EF4;vertical-align:middle'></span>계획, 발췌) · 시도 클릭 시 센터별 주체·용량(MW)·상태·연도·<b>출처 링크</b> · ※ 메이저 언론/기업·지자체 공식 발표(2024~2026) 기준, 주요 프로젝트 발췌(전수 아님)"
   };
   const NAME={"서울특별시":"서울","부산광역시":"부산","대구광역시":"대구","인천광역시":"인천","광주광역시":"광주",
     "대전광역시":"대전","울산광역시":"울산","세종특별자치시":"세종","경기도":"경기","강원도":"강원","충청북도":"충북",
@@ -602,6 +602,7 @@ window.WOLBO = {
   }
   // AIDC 도시 마커: 실제 좌표에 원 — 확정MW=채운 원, 목표MW=점선 외곽링, 미공표=점선 빈원. status색.
   const AIDC_SC={"운영중":"#228738","건설중":"#FFB114","계획":"#256EF4"};
+  const aidcDot=(c)=>`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${c};vertical-align:middle;margin-right:1px"></span>`;
   let _aidcBuilt=false;
   function drawAidcMarkers(show){
     if(!show){aidcG.style.display="none";return;}
@@ -636,7 +637,7 @@ window.WOLBO = {
       document.getElementById("legMin").textContent=mode==="selfsuff"?"부족":"부족(−)";document.getElementById("legMax").textContent=mode==="selfsuff"?"잉여":mode==="aidc_count"?"수용↑":"잉여(+)";document.getElementById("legUnit").textContent=mode==="selfsuff"?"색=자급률%(기준100) · 라벨 윗줄=자급률% / 아랫줄=과부족GWh":mode==="aidc_count"?"개 · 100MW=1":"GWh · 기준0";
     }else{const max=Math.max(...vals),base=baseColor(),isAbs=["capacity","generation","consumption"].includes(mode),tot=isAbs?vals.reduce((a,x)=>a+x,0):0;const rk={};if(isAbs){const ord=SHORTS.filter(x=>regionVal(x)>0).sort((a,b)=>regionVal(a)-regionVal(b));ord.forEach((x,i)=>rk[x]=ord.length>1?i/(ord.length-1):1);}SHORTS.forEach(s=>{const v=regionVal(s),t=isAbs?(rk[s]??0):(max>0?v/max:0);paths[s].setAttribute("fill",v>0?seqColor(t,base):"#dde3e9");vlabels[s].textContent=v>0?((mode==="cleanshare"&&reSweet(s)?"★ ":"")+fmt(v)+(unitOf()==="%"?"%":" "+unitOf())):"—";vlabels2[s].textContent=mode==="cleanshare"?(fmt(cleanGWh(s))+" GWh"):(isAbs&&v>0&&tot>0?"전국 "+(v/tot*100).toFixed(1)+"%":"");
       vbar[s].t.style.display="none";vbar[s].f.style.display="none";});
-      document.getElementById("legbar").style.background=`linear-gradient(90deg,${seqColor(0.001,base)},${seqColor(1,base)})`;document.getElementById("legMin").textContent="0";countUp(max);document.getElementById("legUnit").textContent=mode==="cleanshare"?"색=재생E비중% · 라벨=절대 재생E GWh · ★=잉여+비중·절대량 평균↑(우열 아님)":unitOf()+(isEst()?" (추정)":"")+(["capacity","generation","consumption"].includes(mode)?" · 색=상대순위(인접값 구분) · ⬤ 원 크기=실제량 · 라벨 아랫줄=전국 대비%":"")+(mode==="aidc_status"?" · 🟢운영 🟡건설 ⚪계획 · ⬤=도시별 AIDC(크기=확정MW · 점선링=목표MW · 점선원=미공표)":"");}
+      document.getElementById("legbar").style.background=`linear-gradient(90deg,${seqColor(0.001,base)},${seqColor(1,base)})`;document.getElementById("legMin").textContent="0";countUp(max);document.getElementById("legUnit").innerHTML=mode==="cleanshare"?"색=재생E비중% · 라벨=절대 재생E GWh · ★=잉여+비중·절대량 평균↑(우열 아님)":unitOf()+(isEst()?" (추정)":"")+(["capacity","generation","consumption"].includes(mode)?" · 색=상대순위(인접값 구분) · ⬤ 원 크기=실제량 · 라벨 아랫줄=전국 대비%":"")+(mode==="aidc_status"?` · ${aidcDot("#228738")}운영 ${aidcDot("#FFB114")}건설 ${aidcDot("#256EF4")}계획 · ⬤=도시별 AIDC(크기=확정MW · 점선링=목표MW · 점선원=미공표)`:"");}
     document.getElementById("modeFormula").innerHTML=FORMULA[mode]||"";
     {const rf=document.getElementById("rankFormula"),show=["selfsuff","surplus","cleanshare","aidc_count","aidc_status"].includes(mode);rf.style.display=show?"":"none";rf.innerHTML=show?FORMULA[mode]:"";}
     svg.classList.toggle("aidcmode",mode==="aidc_status");
@@ -668,7 +669,7 @@ window.WOLBO = {
     else if(mode==="selfsuff")big=`${selfSuff(s).toFixed(0)}<small>% · 자급률 (＝전력자립도)</small>`;
     else if(mode==="cleanshare")big=`${reSweet(s)?'<span style="color:#e6a700">★</span> ':""}${cleanShare(s).toFixed(0)}<small>% · 재생E 비중 · 절대 ${fmt(cleanGWh(s))} GWh${reSweet(s)?' · <span style="color:#b8860b;font-weight:800">재생E풍부&잉여</span>':""}</small>`;
     else if(mode==="aidc_count"){const n=aidcCount(s);big=`${n>=0?"+":""}${Math.round(n)}<small>개 · 100MW급 AIDC 수용</small>`;}
-    else if(mode==="aidc_status"){const cs=AIDC_SIDO[s]||[],n=cs.reduce((a,c)=>a+c.projects.length,0),o=cs.filter(c=>c.st==="운영중").length,b=cs.filter(c=>c.st==="건설중").length,pl=cs.filter(c=>c.st==="계획").length,rep=aidcSidoMW(s);big=n?`${rep>0?mwFmt(rep):n+"개소"}<small> · ${cs.length}개 도시·${n}개 사업 · 🟢${o}·🟡${b}·⚪${pl}</small>`:`0<small>개 · 발췌 없음</small>`;}
+    else if(mode==="aidc_status"){const cs=AIDC_SIDO[s]||[],n=cs.reduce((a,c)=>a+c.projects.length,0),o=cs.filter(c=>c.st==="운영중").length,b=cs.filter(c=>c.st==="건설중").length,pl=cs.filter(c=>c.st==="계획").length,rep=aidcSidoMW(s);big=n?`${rep>0?mwFmt(rep):n+"개소"}<small> · ${cs.length}개 도시·${n}개 사업 · ${aidcDot("#228738")}${o}·${aidcDot("#FFB114")}${b}·${aidcDot("#256EF4")}${pl}</small>`:`0<small>개 · 발췌 없음</small>`;}
     else big=`${surplus(s)>=0?"+":""}${fmt(surplus(s))}<small>GWh · 전력 과부족(발전−소비)</small>`;
     document.getElementById("dBig").innerHTML=big;
     {/* 수급 밸런스 — 발전·소비·자급률·과부족 (RE100 모드는 중복이라 생략) */
