@@ -555,7 +555,7 @@ window.WOLBO = {
     if(!dragging)return;const dx=e.clientX-stt.x,dy=e.clientY-stt.y;moved=Math.max(moved,Math.abs(dx)+Math.abs(dy));tx=stt.tx+dx*stt.rx;ty=stt.ty+dy*stt.ry;clampPan();applyVp();});
   const endPtr=e=>{if(!pointers.has(e.pointerId))return;pointers.delete(e.pointerId);try{svg.releasePointerCapture(e.pointerId);}catch(_){}
     if(pointers.size<2)pinchPrev=null;
-    if(pointers.size===0){dragging=false;svg.classList.remove("grabbing");if(downReg&&paths[downReg]){if(moved<6)select(downReg===selected?null:downReg);}else if(moved<14)select(null);downReg=null;}
+    if(pointers.size===0){dragging=false;svg.classList.remove("grabbing");if(downReg&&paths[downReg]){if(moved<6)select(downReg===selected?null:downReg);}downReg=null;}
     else if(pointers.size===1){startPan([...pointers.values()][0]);moved=999;}};
   svg.addEventListener("pointerup",endPtr);svg.addEventListener("pointercancel",endPtr);
   const ctr=()=>{const r=svg.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2];};
