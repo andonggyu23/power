@@ -531,6 +531,13 @@ window.WOLBO = {
       el.addEventListener("mousemove",e=>{if(!dragging)showTip(e,s);});
       el.addEventListener("mouseenter",()=>hover(s));
       el.addEventListener("mouseleave",()=>{tip.style.opacity=0;unhover();});});});
+  // 빈 지도 영역(지역 아님)에 커서가 오면 호버값(preview) 확실히 해제 → 클릭 선택값, 없으면 전국으로 고정
+  // (지역 path·라벨 호버 시 DOM 재배치로 mouseleave가 누락될 수 있어, mapbg에서 명시적으로 보강)
+  const mapbg=document.getElementById("mapbg");
+  const clearHover=()=>{if(preview!==null){tip.style.opacity=0;unhover();}};
+  mapbg.addEventListener("mouseenter",clearHover);
+  mapbg.addEventListener("mousemove",clearHover);
+  svg.addEventListener("mouseleave",clearHover);
 
   // 최초 화면에서 지도가 프레임을 꽉 채우도록, 실제 콘텐츠 bbox에 맞춰 viewBox 조정(여백 제거)
   try{const bb=vp.getBBox(),m=8;
