@@ -560,6 +560,11 @@ window.WOLBO = {
     if(pointers.size===0){dragging=false;svg.classList.remove("grabbing");if(downReg&&paths[downReg]){if(moved<6)select(downReg===selected?null:downReg);}else if(moved<14)select(null);downReg=null;}
     else if(pointers.size===1){startPan([...pointers.values()][0]);moved=999;}};
   svg.addEventListener("pointerup",endPtr);svg.addEventListener("pointercancel",endPtr);
+  // 지도 바깥(대시보드 빈 영역) 클릭 시에도 전국으로 전환 — 지도 내부·버튼·셀렉트·링크·순위표 행은 제외(자체 처리)
+  document.addEventListener("click",e=>{const t=e.target;if(!t||!t.closest)return;
+    if(document.getElementById("mapView").style.display==="none")return;            // 추이 탭에선 무시
+    if(t.closest("#map, button, select, a, input, label, #rankBody tr"))return;     // 지도·컨트롤·순위행
+    if(selected!==null){preview=null;select(null);}});                              // 선택 해제 → 전국
   const ctr=()=>{const r=svg.getBoundingClientRect();return[r.left+r.width/2,r.top+r.height/2];};
   document.getElementById("zin").onclick=()=>zoomAt(...ctr(),1.4);document.getElementById("zout").onclick=()=>zoomAt(...ctr(),1/1.4);document.getElementById("zreset").onclick=()=>{k=1;tx=0;ty=0;applyVp();};
 
