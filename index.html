@@ -384,11 +384,11 @@ window.WOLBO = {
   // 국내 주요 AI 데이터센터(AIDC) — 도시 단위 좌표·확정/목표 MW. 메이저 언론/공식발표(2024~2026), 출처 없으면 미포함.
   // 원칙: 서로 다른 사업은 '합산 금지' — 도시 원 크기는 대표(최대 단일) 사업 기준, 나머지는 별도 표기.
   const AIDC={cities:[
-    {city:"서울 금천",sido:"서울",lon:126.90,lat:37.46,dx:-65,dy:-36,st:"운영중",mwC:40,mwT:null,projects:[
-      {name:"KT클라우드 가산 AIDC",op:"KT클라우드",mwC:40,mwT:null,st:"운영중",y:"2025",src:"테크M",url:"https://www.techm.kr/news/articleView.html?idxno=146291",d:"국내 첫 리퀴드쿨링"},
-      {name:"SK브로드밴드 가산 DC",op:"SK브로드밴드",mwC:40,mwT:null,st:"운영중",y:null,src:"디일렉",url:"https://www.thelec.kr/news/articleView.html?idxno=53349",d:"서울 최대급(수전40·IT26)"}]},
-    {city:"화성 동탄",sido:"경기",lon:127.10,lat:37.20,dx:28,dy:34,st:"건설중",mwC:40,mwT:null,projects:[
-      {name:"삼성SDS 동탄 DC",op:"삼성SDS",mwC:40,mwT:null,st:"건설중",y:"2026",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20251104172216",d:"동관20·서관20MW"}]},
+    {city:"서울 금천",sido:"서울",lon:126.90,lat:37.46,dx:-65,dy:-36,st:"운영중",mwC:80,mwT:null,projects:[
+      {name:"KT클라우드 가산 AIDC",op:"KT클라우드",mwC:40,mwT:null,st:"운영중",y:"2025",src:"디일렉",url:"https://www.thelec.kr/news/articleView.html?idxno=43408",d:"국내 상업용DC 최초 리퀴드쿨링(B200)·수전40/IT26"},
+      {name:"SK브로드밴드 가산 DC",op:"SK브로드밴드",mwC:80,mwT:null,st:"운영중",y:"2020~21",src:"디일렉",url:"https://www.thelec.kr/news/articleView.html?idxno=53349",d:"수전80/IT46·약8천랙(개관연도 자료상충)"}]},
+    {city:"화성 동탄",sido:"경기",lon:127.10,lat:37.20,dx:28,dy:34,st:"운영중",mwC:40,mwT:null,projects:[
+      {name:"삼성SDS 동탄 DC",op:"삼성SDS",mwC:40,mwT:null,st:"운영중",y:"2022~26",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20251104172216",d:"동관20MW('22)+서관 AI전용20MW('26 1분기 가동)"}]},
     {city:"춘천",sido:"강원",lon:127.73,lat:37.88,st:"운영중",mwC:null,mwT:null,projects:[
       {name:"네이버 각 춘천",op:"네이버클라우드",mwC:null,mwT:null,st:"운영중",y:"2013",src:"블로터",url:"https://www.bloter.net/news/articleView.html?idxno=47644",d:"네이버 첫 DC"},
       {name:"삼성SDS 춘천 DC",op:"삼성SDS",mwC:null,mwT:null,st:"운영중",y:"2019",src:"메트로신문",url:"https://www.metroseoul.co.kr/article/2019092200006",d:"SDDC 기반"}]},
@@ -398,15 +398,15 @@ window.WOLBO = {
       {name:"네이버 AIDC(3대 메가프로젝트)",op:"네이버",mwC:null,mwT:1000,st:"계획",y:"2028착공",src:"정부발표·국민보고회(2026.6.29)",url:"https://www.etnews.com/20260629000384",d:"3대 메가프로젝트(2026.6.29 정부발표)·네이버 1GW 신규 거점(세종 중심+추가권역)"}]},
     {city:"광주 첨단3지구",sido:"광주",lon:126.85,lat:35.23,st:"운영중",mwC:6,mwT:null,projects:[
       {name:"NHN 광주 국가AI데이터센터",op:"NHN클라우드",mwC:6,mwT:null,st:"운영중",y:"2023",src:"디지털데일리",url:"https://m.ddaily.co.kr/page/view/2024032416053730647",d:"북구 첨단3지구 AI집적단지·6MW(IT 3.2MW)·260랙·88.5PF(H100 약1천대)·107PB"}]},
-    {city:"새만금",sido:"전북",lon:126.71,lat:35.80,st:"계획",mwC:100,mwT:null,projects:[
-      {name:"새만금 AI DC",op:"현대차그룹",mwC:100,mwT:null,st:"계획",y:"2029",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20260227114409",d:"현대차 9조중 AIDC 5.8조·GPU5만(태양광·수전해 MW와 혼용금지)"}]},
+    {city:"새만금",sido:"전북",lon:126.71,lat:35.80,st:"계획",mwC:null,mwT:null,projects:[
+      {name:"새만금 AI DC",op:"현대차그룹",mwC:null,mwT:null,st:"계획",y:"2027착공·29완공",src:"서울경제",url:"https://www.sedaily.com/article/20013719",d:"9조 MOU 중 AIDC 5.8조·GPU5만급·DC 전력MW 미발표(태양광GW·수전해200MW와 혼용금지)"}]},
     {city:"해남 솔라시도",sido:"전남",lon:126.43,lat:34.49,st:"계획",mwC:40,mwT:120,projects:[
       {name:"국가AI컴퓨팅센터(과기정통부)",op:"삼성SDS 컨소시엄",mwC:40,mwT:120,st:"계획",y:"2026.7착공·28가동",src:"디일렉",url:"https://thelec.kr/news/articleView.html?idxno=42492",d:"과기정통부 사업 확정·약2.9조·GPU1.5만('28)→5만('30)·전력 40MW→80MW(최대 120MW급)·154kV변전소 조기신설 (솔라시도 파크 전체는 별도 1GW급)"}]},
-    {city:"구미",sido:"경북",lon:128.34,lat:36.12,st:"건설중",mwC:60,mwT:null,projects:[
-      {name:"삼성SDS 구미 DC",op:"삼성SDS",mwC:60,mwT:null,st:"건설중",y:"2029",src:"디지털데일리",url:"https://m.ddaily.co.kr/page/view/2026010809063760230",d:"옛 구미1사업장"}]},
-    {city:"포항",sido:"경북",lon:129.34,lat:36.02,st:"계획",mwC:40,mwT:200,projects:[
-      {name:"OpenAI·삼성SDS 포항(스타게이트)",op:"OpenAI·삼성SDS",mwC:20,mwT:200,st:"계획",y:"2027",src:"한국경제",url:"https://www.hankyung.com/article/2025100117571",d:"초기20→최대200MW"},
-      {name:"포항 글로벌 AIDC(광명산단)",op:"포항시",mwC:40,mwT:null,st:"계획",y:"2027",src:"경북매일",url:"https://www.kbmaeil.com/article/20251201500382",d:"별도 사업·광명산단 2조"}]},
+    {city:"구미",sido:"경북",lon:128.34,lat:36.12,st:"계획",mwC:60,mwT:null,projects:[
+      {name:"삼성SDS 구미 DC",op:"삼성SDS",mwC:60,mwT:null,st:"계획",y:"2029.3 가동목표",src:"삼성SDS",url:"https://www.samsungsds.com/kr/news/gumi-260108.html",d:"옛 구미1사업장·MOU(계획)·4273억·60MW급"}]},
+    {city:"포항",sido:"경북",lon:129.34,lat:36.02,st:"계획",mwC:40,mwT:300,projects:[
+      {name:"OpenAI·삼성SDS 포항(스타게이트)",op:"OpenAI·삼성SDS",mwC:20,mwT:200,st:"계획",y:"2027 가동목표",src:"삼성SDS",url:"https://www.samsungsds.com/kr/news/hk-251002.html",d:"흥해읍 융합기술산업지구·초기20→최대200MW(확장목표)·사업비 미확정"},
+      {name:"포항 글로벌 AIDC(광명산단)",op:"네오AI클라우드(민간)",mwC:40,mwT:300,st:"계획",y:"2026착공·27준공",src:"경북일보",url:"https://www.kyongbuk.co.kr/news/articleView.html?idxno=4066378",d:"광명일반산단·1단계40MW(5500억)→최종200~300MW·전체2조·시공 현대건설"}]},
     {city:"울산 남구",sido:"울산",lon:129.30,lat:35.54,st:"건설중",mwC:103,mwT:1000,projects:[
       {name:"SK AI 데이터센터 울산",op:"SKT·SK에코·AWS",mwC:103,mwT:1000,st:"건설중",y:"2027~29",src:"SKT 뉴스룸",url:"https://news.sktelecom.com/214708",d:"7조·GPU6만·1단계41→103MW 확정→1GW 목표. 3대 메가프로젝트(2026.6.29 정부발표) SK 전국 5GW(2035년 15GW)·울산 거점, 2단계 중부·호남·강원·대경권 4GW 추가검토"}]}
   ]};
