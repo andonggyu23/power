@@ -396,8 +396,11 @@ window.WOLBO = {
     {city:"춘천",sido:"강원",lon:127.73,lat:37.88,st:"운영중",mwC:null,mwT:null,projects:[
       {name:"네이버 각 춘천",op:"네이버클라우드",mwC:null,mwT:null,st:"운영중",y:"2013",src:"블로터",url:"https://www.bloter.net/news/articleView.html?idxno=47644",d:"네이버 첫 DC"},
       {name:"삼성SDS 춘천 DC",op:"삼성SDS",mwC:null,mwT:null,st:"운영중",y:"2019",src:"메트로신문",url:"https://www.metroseoul.co.kr/article/2019092200006",d:"SDDC 기반"}]},
-    {city:"세종",sido:"세종",lon:127.29,lat:36.49,st:"운영중",mwC:270,mwT:null,projects:[
-      {name:"네이버 각 세종(+증설)",op:"네이버클라우드",mwC:270,mwT:null,st:"운영중",y:"2023~",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20231106150331",d:"270MW급·2/3단계 증설(27~29)"}]},
+    {city:"동해",sido:"강원",lon:129.12,lat:37.47,dx:30,dy:-4,st:"계획",mwC:null,mwT:2400,projects:[
+      {name:"GS AI 데이터센터 캠퍼스",op:"GS(GS AI인프라)",mwC:null,mwT:2400,st:"계획",y:"2028~29",src:"정부발표·국민보고회(2026.6.29)",url:"https://www.ajunews.com/view/20260629163912365",d:"3대 메가프로젝트(2026.6.29 정부발표)·30조·북평 제2산단·아시아 최대 캠퍼스·1단계1.2GW('28준공)+2단계1.2GW('29준공)"}]},
+    {city:"세종",sido:"세종",lon:127.29,lat:36.49,st:"운영중",mwC:270,mwT:1000,projects:[
+      {name:"네이버 각 세종(+증설)",op:"네이버클라우드",mwC:270,mwT:null,st:"운영중",y:"2023~",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20231106150331",d:"270MW급·2/3단계 증설(27~29)"},
+      {name:"네이버 AIDC(3대 메가프로젝트)",op:"네이버",mwC:null,mwT:1000,st:"계획",y:"2028착공",src:"정부발표·국민보고회(2026.6.29)",url:"https://www.etnews.com/20260629000384",d:"3대 메가프로젝트(2026.6.29 정부발표)·네이버 1GW 신규 거점(세종 중심+추가권역)"}]},
     {city:"광주 광산",sido:"광주",lon:126.79,lat:35.16,st:"운영중",mwC:null,mwT:null,projects:[
       {name:"NHN 광주 국가AI데이터센터",op:"NHN클라우드",mwC:null,mwT:null,st:"운영중",y:"2023",src:"ZDNet",url:"https://zdnet.co.kr/view/?no=20231103130906",d:"88.5PF·107PB, MW미공표"}]},
     {city:"천안",sido:"충남",lon:127.15,lat:36.81,st:"계획",mwC:80,mwT:null,projects:[
@@ -413,7 +416,7 @@ window.WOLBO = {
       {name:"OpenAI·삼성SDS 포항(스타게이트)",op:"OpenAI·삼성SDS",mwC:20,mwT:200,st:"계획",y:"2027",src:"한국경제",url:"https://www.hankyung.com/article/2025100117571",d:"초기20→최대200MW"},
       {name:"포항 글로벌 AIDC(광명산단)",op:"포항시",mwC:40,mwT:null,st:"계획",y:"2027",src:"경북매일",url:"https://www.kbmaeil.com/article/20251201500382",d:"별도 사업·광명산단 2조"}]},
     {city:"울산 남구",sido:"울산",lon:129.30,lat:35.54,st:"건설중",mwC:103,mwT:1000,projects:[
-      {name:"SK AI 데이터센터 울산",op:"SKT·SK에코·AWS",mwC:103,mwT:1000,st:"건설중",y:"2027~29",src:"SKT 뉴스룸",url:"https://news.sktelecom.com/214708",d:"7조·GPU6만·1단계41→103MW 확정→1GW 목표"}]}
+      {name:"SK AI 데이터센터 울산",op:"SKT·SK에코·AWS",mwC:103,mwT:1000,st:"건설중",y:"2027~29",src:"SKT 뉴스룸",url:"https://news.sktelecom.com/214708",d:"7조·GPU6만·1단계41→103MW 확정→1GW 목표. 3대 메가프로젝트(2026.6.29 정부발표) SK 전국 5GW(2035년 15GW)·울산 거점, 2단계 중부·호남·강원·대경권 4GW 추가검토"}]}
   ]};
   const AIDC_SIDO={};
   AIDC.cities.forEach(c=>{(AIDC_SIDO[c.sido]=AIDC_SIDO[c.sido]||[]).push(c);});
