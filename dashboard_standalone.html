@@ -49,6 +49,8 @@
   .bub .ldot{display:none;}  /* 버블(절대량) 모드에선 리더 중심점 숨김 — 버블이 위치 표시 */
   .rbar2{pointer-events:none;transition:height .5s cubic-bezier(.4,0,.2,1),y .5s cubic-bezier(.4,0,.2,1),fill .3s;}
   .aidcmode .rlabel,.aidcmode .leader,.aidcmode .ldot,.aidcmode .rval,.aidcmode .rval2{display:none;}  /* AIDC 도시맵: 시도 이름표 숨겨 글씨 충돌 제거 */
+  .aidcmode path.region{stroke:#93a2b2;stroke-width:1;}  /* AIDC 모드: 흰 배경과 뭉개지지 않게 시도 경계·해안선 또렷하게 */
+  .aidcmode path.region.hl,.aidcmode path.region.sel{stroke:#0b50d0;}
   .aidclbl{font-size:8.8px;fill:#16202b;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:2.4px;font-weight:800;pointer-events:none;}
   .aidlcap{font-size:8px;fill:#3a4654;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:2.2px;font-weight:700;pointer-events:none;}
   .rbartrack{fill:#fff;fill-opacity:.3;stroke:#0000001f;stroke-width:.6;pointer-events:none;}
@@ -152,7 +154,8 @@
     <div class="mapbox">
       <svg id="map" viewBox="0 0 600 720" preserveAspectRatio="xMidYMid meet">
         <defs><filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#0b50d0" flood-opacity="0.32"/></filter></defs>
+          <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#0b50d0" flood-opacity="0.32"/></filter>
+          <filter id="mshadow" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="0.6" stdDeviation="1.6" flood-color="#0b1f33" flood-opacity="0.45"/></filter></defs>
         <rect id="mapbg" x="0" y="0" width="600" height="720" fill="none" pointer-events="all"></rect>
         <g id="vp"><g id="regions"></g><g id="rlabels"></g></g>
       </svg>
@@ -606,15 +609,15 @@ window.WOLBO = {
     if(!show){aidcG.style.display="none";return;}
     aidcG.style.display="";
     if(_aidcBuilt)return; _aidcBuilt=true;
-    const rOf=(mw)=>Math.max(5,0.55*Math.sqrt(mw)), N=(t)=>document.createElementNS(SVGNS,t);
+    const rOf=(mw)=>Math.max(6.5,0.62*Math.sqrt(mw)), N=(t)=>document.createElementNS(SVGNS,t);
     AIDC.cities.slice().sort((a,b)=>Math.max(b.mwC||0,b.mwT||0)-Math.max(a.mwC||0,a.mwT||0)).forEach(c=>{
       const pt=mainProj(c.lon,c.lat),x=pt[0],y=pt[1],tx=x+(c.dx||0),ty=y+(c.dy||0),col=AIDC_SC[c.st]||"#6D7882";
-      if(c.dx||c.dy){const ld=N("line");ld.setAttribute("x1",x);ld.setAttribute("y1",y);ld.setAttribute("x2",tx);ld.setAttribute("y2",ty);ld.setAttribute("stroke","#9aa6b2");ld.setAttribute("stroke-width","0.8");aidcG.appendChild(ld);
-        const dt=N("circle");dt.setAttribute("cx",x);dt.setAttribute("cy",y);dt.setAttribute("r","1.9");dt.setAttribute("fill",col);aidcG.appendChild(dt);}
-      if(c.mwT&&c.mwT>(c.mwC||0)){const rg=N("circle");rg.setAttribute("cx",tx);rg.setAttribute("cy",ty);rg.setAttribute("r",rOf(c.mwT).toFixed(1));rg.setAttribute("fill","none");rg.setAttribute("stroke",col);rg.setAttribute("stroke-width","1.3");rg.setAttribute("stroke-dasharray","3 2");rg.setAttribute("opacity","0.8");aidcG.appendChild(rg);}
+      if(c.dx||c.dy){const ld=N("line");ld.setAttribute("x1",x);ld.setAttribute("y1",y);ld.setAttribute("x2",tx);ld.setAttribute("y2",ty);ld.setAttribute("stroke","#7c8a9b");ld.setAttribute("stroke-width","1.1");aidcG.appendChild(ld);
+        const dt=N("circle");dt.setAttribute("cx",x);dt.setAttribute("cy",y);dt.setAttribute("r","2.3");dt.setAttribute("fill",col);dt.setAttribute("stroke","#fff");dt.setAttribute("stroke-width","0.8");aidcG.appendChild(dt);}
+      if(c.mwT&&c.mwT>(c.mwC||0)){const rg=N("circle");rg.setAttribute("cx",tx);rg.setAttribute("cy",ty);rg.setAttribute("r",rOf(c.mwT).toFixed(1));rg.setAttribute("fill","none");rg.setAttribute("stroke",col);rg.setAttribute("stroke-width","1.6");rg.setAttribute("stroke-dasharray","3 2");rg.setAttribute("opacity","0.9");aidcG.appendChild(rg);}
       const cc=N("circle");cc.setAttribute("cx",tx);cc.setAttribute("cy",ty);
-      if(c.mwC){cc.setAttribute("r",rOf(c.mwC).toFixed(1));cc.setAttribute("fill",col);cc.setAttribute("fill-opacity","0.82");cc.setAttribute("stroke","#fff");cc.setAttribute("stroke-width","1.3");}
-      else{cc.setAttribute("r","6");cc.setAttribute("fill","none");cc.setAttribute("stroke",col);cc.setAttribute("stroke-width","1.5");cc.setAttribute("stroke-dasharray","2 2");}
+      if(c.mwC){cc.setAttribute("r",rOf(c.mwC).toFixed(1));cc.setAttribute("fill",col);cc.setAttribute("fill-opacity","0.95");cc.setAttribute("stroke","#fff");cc.setAttribute("stroke-width","1.8");cc.setAttribute("filter","url(#mshadow)");}
+      else{cc.setAttribute("r","7");cc.setAttribute("fill","#fff");cc.setAttribute("fill-opacity","0.6");cc.setAttribute("stroke",col);cc.setAttribute("stroke-width","2");cc.setAttribute("stroke-dasharray","2.5 2");cc.setAttribute("filter","url(#mshadow)");}
       aidcG.appendChild(cc);
       const ry=Math.max(rOf(c.mwT||0),rOf(c.mwC||1),6);
       const t1=N("text");t1.setAttribute("x",tx);t1.setAttribute("y",(ty-ry-3).toFixed(1));t1.setAttribute("class","aidclbl");t1.textContent=c.city;aidcG.appendChild(t1);
@@ -639,7 +642,7 @@ window.WOLBO = {
     document.getElementById("modeFormula").innerHTML=FORMULA[mode]||"";
     {const rf=document.getElementById("rankFormula"),show=["selfsuff","surplus","cleanshare","aidc_count","aidc_status"].includes(mode);rf.style.display=show?"":"none";rf.innerHTML=show?FORMULA[mode]:"";}
     svg.classList.toggle("aidcmode",mode==="aidc_status");
-    if(mode==="aidc_status"){SHORTS.forEach(s=>{paths[s].setAttribute("fill","#eceff3");});}
+    if(mode==="aidc_status"){SHORTS.forEach(s=>{paths[s].setAttribute("fill","#d9e2ed");});}
     setMag();drawAidcMarkers(mode==="aidc_status");
     renderRank(vals);if(selected)select(selected);else renderDetail();
   }
