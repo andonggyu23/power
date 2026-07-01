@@ -369,7 +369,7 @@ window.WOLBO = {
     selfsuff:"📐 <b>수급밸런스</b> · 지도 색=<b>자급률</b>(＝<b>전력자립도</b>, 발전량÷판매량×100%, 100%↑ 잉여·↓ 부족) · 라벨 윗줄=<b>자급률(%)</b> / 아랫줄=<b>과부족</b>(발전−소비 GWh, +잉여/−부족). 자급률 ≥100% ⟺ 과부족 ≥0 (방향 동일). ※ 소비량=판매전력량.",
     surplus:"📐 <b>전력 과부족</b> = 발전 − 소비(GWh) · 잉여(過,+) / 부족(不足,−) · <b>평균 잉여출력(GW)</b> = 과부족에너지 ÷ 가동시간",
     cleanshare:"📐 <b>재생에너지(RE100 국제기준)</b> · 지도 색=<b>비중</b>((수력+신재생−연료전지)÷총발전×100%) · 라벨 아랫줄=<b>절대 재생E 발전량</b>(GWh) · ※ <b>연료전지(LNG 개질수소=화석)는 국내 '신재생'이나 RE100 비해당→제외</b> · 원자력도 제외 · <b style='color:#b8860b'>★</b>=<b>에너지 잉여 + 재생E 비중·절대량 모두 평균 이상</b>(세 조건 동시 충족 <b>표시일 뿐, 입지 우열·AIDC 적합도가 아님</b>). ※ 절대량=총발전(조달 가능 여유 아님) · 연간 에너지 잉여 ≠ 송전 접속여유 · 계통영향평가 가점은 사업자 자가조달 계획이 결정.",
-    aidc_count:"📐 <b>AIDC 수용(개)</b> = 평균 잉여출력(GW) ÷ 0.1GW (100MW=DC 1개)<br>· <b>평균 잉여출력</b> = 과부족에너지(발전−소비, GWh) ÷ 가동시간(연 8,760h, 당해년도는 경과기간)<br>· 💡 <b>AIDC 1개소(100MW) ≈ NVIDIA B200 약 4.7만 장</b> (PUE 1.2 가정)<br>· ⚠ 평균 잉여출력은 <b>에너지 기준 이론치</b> — 잉여가 태양광·풍력이면 24시간 상시 출력이 아님 → <b>시도 클릭 시 변동성 제외 보정값</b> 표시<br>· 1차 스크리닝 — 실제 입지는 <b>송전 접속여유</b>가 별도 결정",
+    aidc_count:"📐 <b>AIDC 수용(개)</b> = 평균 잉여출력(GW) ÷ 0.1GW (100MW=DC 1개)<br>· <b>평균 잉여출력</b> = 과부족에너지(발전−소비, GWh) ÷ 가동시간(연 8,760h, 당해년도는 경과기간)<br>· 💡 <b>AIDC 1개소(100MW) ≈ NVIDIA B200 약 4.7만 장</b> (PUE 1.2 가정)<br>· ⚠ 평균 잉여출력은 <b>에너지 기준 이론치</b> — 잉여가 태양광·풍력이면 24시간 상시 출력이 아님<br>· 1차 스크리닝 — 실제 입지는 <b>송전 접속여유</b>가 별도 결정",
     aidc_status:"🏢 <b>AIDC 현황</b> · 지도 면=<b>균일 회색(중립)</b> · <b>마커</b>가 정보 전달: 색=상태(<span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:#228738;vertical-align:middle'></span>운영중·<span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:#FFB114;vertical-align:middle'></span>건설중·<span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:#256EF4;vertical-align:middle'></span>계획), 크기=확정MW(점선링=목표MW·점선원=미공표) · <b>순위표=시도별 대표(최대 단일 사업) 확정용량(MW) 순</b> · 시도 클릭 시 센터별 주체·용량(MW)·상태·연도·<b>출처 링크</b> · ※ 서로 다른 사업은 <b>합산 금지</b>(원·순위=대표 사업) · 메이저 언론/기업·지자체 공식 발표(2024~2026) 발췌(전수 아님) · <b>계획·목표 수치는 발표 시점 구상으로 미확정(변동 가능)</b>"
   };
   const NAME={"서울특별시":"서울","부산광역시":"부산","대구광역시":"대구","인천광역시":"인천","광주광역시":"광주",
@@ -453,8 +453,6 @@ window.WOLBO = {
   function surplus(s){const c=CONS(year);if(!(hasCons&&c&&GENT(year)))return null;if(s==="전국")return SHORTS.reduce((a,x)=>a+(GENT(year)[x]||0),0)-SHORTS.reduce((a,x)=>a+(c[x]||0),0);return GENT(year)[s]-c[s];}
   function aidcGW(s){const v=surplus(s);return v==null?null:v/hoursOf(year);}
   function aidcCount(s){const gw=aidcGW(s);return gw==null?null:gw/0.1;}                       // 100MW급 = 1개
-  // firm(상시) 보정: 변동성 전원(태양광·풍력·해양)을 뺀 디스패처블 비율. 잉여를 발전 구성비로 안분하는 보수적 가정.
-  function firmShare(s){const g=s==="전국"?NATGEN(year):(genEst(year)[s]||{});const t=g.total||0;if(t<=0)return 1;const varGen=(g.solar||0)+(g.wind||0)+(g.ocean||0);return Math.max(0,Math.min(1,1-varGen/t));}
   // RE100 국제기준: 재생에너지만 인정. 연료전지(LNG 개질수소=화석)·IGCC(석탄가스화)는 국내 '신재생'엔 들어가나 RE100 비해당 → 제외
   const reGWh=(g)=>Math.max(0,(g.hydro||0)+(g.renewable||0)-(g.fuelcell||0)-(g.igcc||0));
   function cleanShare(s){const g=s==="전국"?NATGEN(year):(genEst(year)[s]||{}),t=g.total||0;return t>0?reGWh(g)/t*100:0;}   // RE100 비중(원자력·연료전지·IGCC 제외)
@@ -730,13 +728,8 @@ window.WOLBO = {
         +`<div><b style="color:var(--muted)">②</b> ${sp>=0?"+":""}${fmt(sp)} GWh ÷ ${hLab} = <b>${gw.toFixed(2)} GW</b> <span style="color:var(--muted)">평균 잉여출력</span></div>`
         +(gw>0?`<div><b style="color:var(--muted)">③</b> ${gw.toFixed(2)} GW ÷ 0.1 GW(100MW) ≈ <b>${cnt}개</b></div>`:"")
         +`</div>`;
-      const fS=firmShare(s),intPct=(1-fS)*100,firmGW=gw*fS,firmCnt=Math.round(firmGW/0.1);
-      const firm=gw>0?`<div style="background:rgba(255,255,255,.55);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11.5px;line-height:1.75;color:#1a2530">`
-        +`<div><b style="color:var(--muted)">변동성 제외 보정</b> · 이 지역 발전의 <b>${intPct.toFixed(0)}%</b>가 변동성(태양광·풍력·해양) → 낮·바람에만 나와 24시간 상시 부하엔 그대로 못 씀</div>`
-        +`<div>→ <b>상시(24h) 기준 보수적 수용 ≈ ${firmGW.toFixed(2)} GW · 약 ${firmCnt}개</b> <span style="color:var(--muted)">(잉여를 발전 구성비로 안분한 가정 · ${intPct>=40?'변동성 큼→실제는 더 낮을 수 있음':'디스패처블 위주'})</span></div>`
-        +`</div>`:"";
-      const plain=gw>0?`<div style="font-size:11.5px;margin-top:7px;color:#1a2530">💡 1년 내내 <b>평균 ${gw.toFixed(2)} GW</b>가 남아도는 셈 → <b>100MW급 데이터센터 약 ${cnt}개</b>(≈ <b>NVIDIA B200 ${b200Man(cnt*B200_PER_DC)}</b>)분의 잉여전력이에요 <span style="color:var(--muted)">(에너지 기준 이론치 · 상시 가동 기준은 위 firm 보정값)</span>.<div style="color:var(--muted);font-size:10.5px;margin-top:2px">※ AIDC 1개소당 B200 약 4.7만 장 (PUE 1.2 가정)</div></div>`:`<div style="font-size:11.5px;margin-top:7px;color:#1a2530">💡 소비가 발전보다 <b>${fmt(Math.abs(sp))} GWh</b> 많아 외부 전력에 의존 → 신규 대형부하(AIDC) 입지로는 부적합.</div>`;
-      a.innerHTML=`<b style="color:${col}">AIDC 1차 스크리닝: ${vd}</b>${gwT}${calc}${firm}${plain}<div style="color:var(--muted);font-size:11px;margin-top:6px">※ 실제 입지는 <b style="color:var(--muted)">송전망 접속 여유용량</b>이 별도 결정하는 1차 스크리닝 값입니다.</div>`;a.style.display="";}
+      const plain=gw>0?`<div style="font-size:11.5px;margin-top:7px;color:#1a2530">💡 1년 내내 <b>평균 ${gw.toFixed(2)} GW</b>가 남아도는 셈 → <b>100MW급 데이터센터 약 ${cnt}개</b>(≈ <b>NVIDIA B200 ${b200Man(cnt*B200_PER_DC)}</b>)분의 잉여전력이에요 <span style="color:var(--muted)">(에너지 기준 이론치)</span>.<div style="color:var(--muted);font-size:10.5px;margin-top:2px">※ AIDC 1개소당 B200 약 4.7만 장 (PUE 1.2 가정)</div></div>`:`<div style="font-size:11.5px;margin-top:7px;color:#1a2530">💡 소비가 발전보다 <b>${fmt(Math.abs(sp))} GWh</b> 많아 외부 전력에 의존 → 신규 대형부하(AIDC) 입지로는 부적합.</div>`;
+      a.innerHTML=`<b style="color:${col}">AIDC 1차 스크리닝: ${vd}</b>${gwT}${calc}${plain}<div style="color:var(--muted);font-size:11px;margin-top:6px">※ 실제 입지는 <b style="color:var(--muted)">송전망 접속 여유용량</b>이 별도 결정하는 1차 스크리닝 값입니다.</div>`;a.style.display="";}
     else a.style.display="none";}
 
   document.getElementById("limitNote").innerHTML=`<b>한전 전력통계월보</b> 행정구역별 실측 — 설비·발전·소비 모두 시도×발전원(6분류: 원자력·석탄·LNG·유류·수력·신재생, 신재생은 태양광·풍력 등 세분). 각 연도는 <b>12월 월보 누계(연간)</b>, <b>${WB.current_year}년은 ${WB.current_label}</b>(부분연도 → 여력 GW는 해당 기간 시간수로 환산). 월보는 잠정치. <b>AIDC 실제 입지는 송전망 접속 여유용량이 별도 결정</b> → 본 지도는 수급 기준 1차 스크리닝.`;
