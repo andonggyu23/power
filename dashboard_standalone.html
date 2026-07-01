@@ -476,7 +476,7 @@ window.WOLBO = {
   const isEst=()=>mode==="generation"&&fuel!=="total"&&!genActual(year);
   const unitOf=()=>({capacity:"MW",generation:"GWh",consumption:"GWh",selfsuff:"%",surplus:"GWh",cleanshare:"%",aidc_count:"개",aidc_status:"MW"})[mode];
 
-  // projection — 본토(제주 제외)는 크게, 제주는 우측 하단 인셋 박스로 분리(공간 절약·가독성↑)
+  // projection — 본토(제주 제외)는 크게, 제주는 좌측 하단 인셋 박스로 분리(공간 절약·가독성↑)
   const W=600,H=720,PAD=20;
   let VBX=0,VBY=0,VBW=W,VBH=H;   // 콘텐츠에 맞춰 동적으로 채워질 viewBox
   function eachCoord(g,cb){const c=g.coordinates;(g.type==="Polygon"?[c]:c).forEach(p=>p.forEach(r=>r.forEach(cb)));}
@@ -485,10 +485,10 @@ window.WOLBO = {
   function makeProj(bb,rx,ry,rw,rh,fixedScl){const[a,b,c,d]=bb,kx=Math.cos((c+d)/2*Math.PI/180),gw=(b-a)*kx,gh=(d-c),scl=fixedScl||Math.min(rw/gw,rh/gh),ox=rx+(rw-gw*scl)/2,oy=ry+(rh-gh*scl)/2,f=(lo,la)=>[ox+(lo-a)*kx*scl,oy+(d-la)*scl];f.scl=scl;return f;}
   const mainProj=makeProj(geoBounds(f=>!isJeju(f)),PAD,PAD,W-2*PAD,H-2*PAD);
   const _jnbb=geoBounds(f=>NAME[f.properties.name]==="전남"),_jnBotY=mainProj((_jnbb[0]+_jnbb[1])/2,_jnbb[2])[1];
-  // 제주: 본토와 '동일 축척'으로 그림(인셋 박스는 제주 실제 크기에 맞춰 산정) — 우측 하단, 바닥=전남 최하단
+  // 제주: 본토와 '동일 축척'으로 그림(인셋 박스는 제주 실제 크기에 맞춰 산정) — 좌측 하단, 바닥=전남 최하단
   const _jbb=geoBounds(isJeju),_jkx=Math.cos((_jbb[2]+_jbb[3])/2*Math.PI/180),
         _jW=(_jbb[1]-_jbb[0])*_jkx*mainProj.scl,_jH=(_jbb[3]-_jbb[2])*mainProj.scl,_PIN=14;
-  const _IW=Math.round(_jW+2*_PIN),_IH=Math.round(_jH+2*_PIN),INSET={x:W-_IW-6,y:Math.round(_jnBotY)-_IH,w:_IW,h:_IH};
+  const _IW=Math.round(_jW+2*_PIN),_IH=Math.round(_jH+2*_PIN),INSET={x:6,y:Math.round(_jnBotY)-_IH,w:_IW,h:_IH};
   const jejuProj=makeProj(_jbb,INSET.x+_PIN,INSET.y+_PIN,_jW,_jH,mainProj.scl);
   const projFor=(f)=>isJeju(f)?jejuProj:mainProj;
   function pathD(g,pr){let d="";const c=g.coordinates;(g.type==="Polygon"?[c]:c).forEach(p=>p.forEach(r=>{r.forEach((pt,i)=>{const[x,y]=pr(pt[0],pt[1]);d+=(i?"L":"M")+x.toFixed(1)+","+y.toFixed(1);});d+="Z";}));return d;}
